@@ -156,11 +156,6 @@ h1.big{font-size:clamp(36px,5.4vw,62px);font-weight:800;letter-spacing:-.03em;li
 .mission-counter{margin-top:30px;font-family:var(--mono);font-size:clamp(12px,1.8vw,15px);letter-spacing:.14em;color:var(--muted);text-transform:uppercase;}
 .mission-counter b{color:var(--amber);font-size:clamp(20px,3vw,28px);letter-spacing:0;}
 
-/* speaker notes */
-#notes{position:fixed;left:50%;transform:translateX(-50%) translateY(130%);bottom:86px;z-index:250;width:min(760px,92vw);background:rgba(10,13,30,.92);border:1px solid rgba(94,234,212,.3);border-radius:16px;padding:16px 22px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);transition:transform .5s cubic-bezier(.22,.61,.36,1);}
-#notes.show{transform:translateX(-50%) translateY(0);}
-#notes .nl{font-family:var(--mono);font-size:9.5px;letter-spacing:.26em;color:var(--teal);text-transform:uppercase;margin-bottom:6px;}
-#notes .nt{font-size:14.5px;color:#d6dcf0;font-style:italic;line-height:1.6;}
 
 /* overview grid */
 #ovr{position:fixed;inset:0;z-index:280;background:rgba(3,4,10,.85);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);display:none;align-items:center;justify-content:center;padding:5vh 5vw;}
@@ -187,7 +182,6 @@ h1.big{font-size:clamp(36px,5.4vw,62px);font-weight:800;letter-spacing:-.03em;li
   </a>
   <div class="chrome-right">
     <div class="conf">Confidential · Investor Deck · 2026</div>
-    <button class="chbtn" id="btnNotes" title="Speaker notes (N)">N</button>
     <button class="chbtn" id="btnAuto" title="Auto-play (A)">A</button>
     <button class="chbtn" id="btnFull" title="Fullscreen (F)">⛶</button>
     <a class="back" href="index.html">← Main site</a>
@@ -196,7 +190,7 @@ h1.big{font-size:clamp(36px,5.4vw,62px);font-weight:800;letter-spacing:-.03em;li
 <div id="deck"></div>
 <div id="chap"></div>
 <div id="counter"><b>01</b> / 16</div>
-<div id="hint">scroll or swipe · ← → · O overview · N notes · A auto · F full · Q site</div>
+<div id="hint">scroll or swipe · ← →  · F full · Q site</div>
 <div id="arrows">
   <button class="arr" id="prevBtn" aria-label="Previous slide">↑</button>
   <button class="arr" id="nextBtn" aria-label="Next slide">
@@ -204,7 +198,6 @@ h1.big{font-size:clamp(36px,5.4vw,62px);font-weight:800;letter-spacing:-.03em;li
     <span style="position:relative;">↓</span>
   </button>
 </div>
-<div id="notes"><div class="nl">🎤 Speaker notes</div><div class="nt" id="noteText"></div></div>
 <div id="ovr"><div class="ovr-wrap"><div class="ovr-title">Overview — click to jump · O / Esc to close</div><div class="ovr-grid" id="ovrGrid"></div></div></div>
 
 <script>
@@ -219,8 +212,7 @@ var SLIDES = [
   '<h1 class="a" style="--d:2">PSYCHE</h1>'+
   '<div class="sub a" style="--d:3"><span class="grad" style="font-weight:700;">Technology with a soul.</span><br/>Ten category-creation companies. One nervous system. One mission.</div>'+
   '<div class="meta a" style="--d:4"><span>EST. 2026 · LAGOS → THE WORLD</span><span>TARGET: <b>10 INDUSTRIES THAT DON\u2019T EXIST YET</b></span></div>'+
-  '<div class="begin-hint a" style="--d:6">Scroll to begin ↓</div></div>',
- note:'Welcome the room calmly. One opening line only: "We build what has never been invented." Then scroll on — do not dwell on the cover.'},
+  '<div class="begin-hint a" style="--d:6">Scroll to begin ↓</div></div>'},
 
 {ttl:'The Hook', chap:'The Hook', ac:'#fb7185',
  html:'<div class="inner">'+
@@ -231,8 +223,7 @@ var SLIDES = [
   '<div class="hookline a" style="--d:3"><span class="hn">/02</span><span class="ht">A video can lie flawlessly in court — and no one owns the word "proof."</span></div>'+
   '<div class="hookline a" style="--d:4"><span class="hn">/03</span><span class="ht">600M people sit in darkness beneath the best sunlight on Earth.</span></div>'+
   '</div>'+
-  '<div class="hook-close a" style="--d:5">Each of these is a trillion-dollar door with no owner. We intend to hold the keys.</div></div>',
- note:'Read each sentence aloud, slowly. Pause after the third. Then deliver the close: "Each of these is a trillion-dollar door with no owner — we are asking you to hold the keys with us."'},
+  '<div class="hook-close a" style="--d:5">Each of these is a trillion-dollar door with no owner. We intend to hold the keys.</div></div>'},
 
 {ttl:'The Problem', chap:'01 · The Problem', ac:'#fb7185',
  html:'<div class="inner">'+
@@ -246,16 +237,14 @@ var SLIDES = [
   '<div class="frac a" style="--d:6"><div class="fv"><span class="cnt" data-target="600" data-suffix="M">0</span></div><div class="fk">people without electricity beneath the best solar resource on Earth</div></div>'+
   '<div class="frac a" style="--d:7"><div class="fv"><span class="cnt" data-target="68" data-prefix="$" data-suffix="T">0</span></div><div class="fk">changing hands between generations with zero digital-inheritance rails</div></div>'+
   '<div class="frac a" style="--d:8"><div class="fv">Billions</div><div class="fk">of AI agents about to transact — with no identity, budget or labor law</div></div>'+
-  '</div></div>',
- note:'The pattern matters more than any single stat. Say it plainly: "Every system on this slide was designed for a world that no longer exists." Let the counters animate before you speak.'},
+  '</div></div>'},
 
 {ttl:'The Insight', chap:'02 · The Insight', ac:'#a78bfa',
  html:'<div class="inner center">'+
   '<div class="tag a" style="--d:0;--ac:#a78bfa;">02 · The Insight</div>'+
   '<h1 class="big a" style="--d:1">Every fracture is<br/><span class="grad">an un-owned industry.</span></h1>'+
   '<p class="lead a" style="--d:2">Category-defining companies capture the overwhelming majority of their market\u2019s economics. The biggest winners don\u2019t fight for markets — <b style="color:var(--text);">they name them</b>. Amazon named e-commerce. Stripe named internet payments. Visa named card networks.</p>'+
-  '<p class="lead a" style="--d:3" style="margin-top:18px;color:var(--teal);font-weight:600;">PSYCHE\u2019s strategy: never enter a market that already has a name.</p></div>',
- note:'Category kings historically capture the large majority of their category\u2019s economics. If asked for comps: Amazon, Stripe, Visa. Repeat the line: "We don\u2019t compete — we name."'},
+  '<p class="lead a" style="--d:3" style="margin-top:18px;color:var(--teal);font-weight:600;">PSYCHE\u2019s strategy: never enter a market that already has a name.</p></div>'},
 
 {ttl:'The Company', chap:'03 · The Company', ac:'#5eead4',
  html:'<div class="inner">'+
@@ -266,8 +255,7 @@ var SLIDES = [
   '<div class="mi a" style="--d:3"><span class="n">/01</span>Not a fund. Not a studio. <b>A single integrated company</b> — shared brand, shared trust, shared rails.</div>'+
   '<div class="mi a" style="--d:4"><span class="n">/02</span>Sequenced to self-fund: <b>revenue-heavy ventures first</b>, civilization-scale moonshots last.</div>'+
   '<div class="mi a" style="--d:5"><span class="n">/03</span>Every venture inherits <b>trust, labor, money, skill and foresight</b> from its siblings on day one.</div>'+
-  '</div></div>',
- note:'This is the Alphabet slide. Emphasize: we are not asking investors to fund ten companies at once — the sequence funds itself.'},
+  '</div></div>'},
 
 {ttl:'The Ten', chap:'04 · The Portfolio', ac:'#5eead4',
  html:'<div class="inner">'+
@@ -285,8 +273,7 @@ var SLIDES = [
   '<div class="tchip a" style="--d:9;--tc:#a78bfa;"><b>Current</b><span>Energy</span></div>'+
   '<div class="tchip a" style="--d:10;--tc:#7dd3fc;"><b>Atlas</b><span>Shelter</span></div>'+
   '</div>'+
-  '<p class="lead a" style="--d:11;margin-top:26px;">Each venture names an industry that doesn\u2019t exist yet — and contributes one pillar to the shared core.</p></div>',
- note:'Do NOT read all ten — highlight three: Roster (now), Covenant (global), Atlas (wild). "The other seven are on the site."'},
+  '<p class="lead a" style="--d:11;margin-top:26px;">Each venture names an industry that doesn\u2019t exist yet — and contributes one pillar to the shared core.</p></div>'},
 
 {ttl:'Phase 1 · Roster + Proven', chap:'05 · Phase 1 — 2026/27', ac:'#a78bfa',
  html:'<div class="inner">'+
@@ -301,8 +288,7 @@ var SLIDES = [
   '<div class="pv-why">"Degrees measure access, not ability — and that lie buries billions."</div>'+
   '<div class="pv-row"><b>Product</b>AI-proctored, continuously verified proof-of-skill passports.</div>'+
   '<div class="pv-row"><b>Model</b>Free for talent; employers pay per verified match; governments pay for workforce intelligence.</div></div>'+
-  '</div></div>',
- note:'Phase 1 = revenue this year. If the room remembers only two ventures, make it these two. Real pain, real budgets, real buyers.'},
+  '</div></div>'},
 
 {ttl:'Phase 2 · Verity + Everlight', chap:'06 · Phase 2 — 2027/30', ac:'#5eead4',
  html:'<div class="inner">'+
@@ -317,8 +303,7 @@ var SLIDES = [
   '<div class="pv-why">"No life should disappear with a password."</div>'+
   '<div class="pv-row"><b>Product</b>AI executor for digital estates + living memory archive for families.</div>'+
   '<div class="pv-row"><b>Model</b>Lifetime subscriptions — the churn rate is, quite literally, zero.</div></div>'+
-  '</div></div>',
- note:'Verity is the enterprise engine; Everlight is the consumer engine. Deliver the line "zero churn" and let it land — it always gets a reaction.'},
+  '</div></div>'},
 
 {ttl:'Phase 3 · The Offensive', chap:'07 · Phase 3 — 2029/31', ac:'#7dd3fc',
  html:'<div class="inner">'+
@@ -334,8 +319,7 @@ var SLIDES = [
   '<div class="pv a" style="--d:4;--pc:#5eead4;"><span class="pv-pill">Remedy · Health</span><h3>A doctor per village</h3>'+
   '<div class="pv-row"><b>Product</b>AI triage in local languages + nurse micro-clinics + phone diagnostics.</div>'+
   '<div class="pv-row"><b>Model</b>Governments & insurers pay per covered life; cents per consult.</div></div>'+
-  '</div></div>',
- note:'This is where the room leans in — leapfrog stories travel. Moniepoint and M-Pesa already proved these outcomes exist. AI makes them continental.'},
+  '</div></div>'},
 
 {ttl:'Phase 4 · Civilization-scale', chap:'08 · Phase 4 — 2031/36', ac:'#fbbf24',
  html:'<div class="inner">'+
@@ -351,8 +335,7 @@ var SLIDES = [
   '<div class="pv a" style="--d:4;--pc:#7dd3fc;"><span class="pv-pill">Atlas · Shelter</span><h3>Climate relocation OS</h3>'+
   '<div class="pv-row"><b>Product</b>Pricing, planning & financing humanity\u2019s moves with dignity.</div>'+
   '<div class="pv-row"><b>Model</b>Advisory + financing take-rate; insurers & states buy risk intelligence.</div></div>'+
-  '</div></div>',
- note:'Frame these as options on the future — funded by Phases 1–3, not by hope. Mirror is the endgame: mention it last and slow down.'},
+  '</div></div>'},
 
 {ttl:'The Moat', chap:'09 · The Moat', ac:'#5eead4',
  html:'<div class="inner">'+
@@ -364,8 +347,7 @@ var SLIDES = [
   '<div class="mi a" style="--d:4"><span class="n">DEFAULTS</span>Every PSYCHE company <b>buys from its siblings first</b> — internal revenue from day one.</div>'+
   '<div class="mi a" style="--d:5"><span class="n">COMPETITION</span>A rival must build <b>ten infrastructures at once</b> to match our tenth venture.</div>'+
   '<div class="mi a" style="--d:6"><span class="n">BRAND</span>One promise compounds across everything we ship: <b>technology with a soul</b>.</div>'+
-  '</div></div>',
- note:'The "why won\u2019t someone copy you" question lives here. Answer: "To beat our tenth venture, you must first build ten infrastructures."'},
+  '</div></div>'},
 
 {ttl:'Why Now', chap:'10 · Why Now', ac:'#fb7185',
  html:'<div class="inner">'+
@@ -376,8 +358,7 @@ var SLIDES = [
   '<div class="cv a" style="--d:3"><div class="ci">🎭</div><b>The trust collapse</b><p>Generated media crossed the threshold of human detection. Proof — of anything — became an enterprise purchasing line.</p><span class="cv-n">Detection now loses by default</span></div>'+
   '<div class="cv a" style="--d:4"><div class="ci">🌍</div><b>Leapfrog economics</b><p>Voice AI in local languages + cheap solar + mobile rails = the biggest systems on Earth can now be skipped, not patched.</p><span class="cv-n">The M-Pesa playbook, at AI scale</span></div>'+
   '</div>'+
-  '<p class="lead a" style="--d:5;margin-top:26px;color:var(--teal);font-weight:600;">Too early in 2019. Too late in 2031. The window is now.</p></div>',
- note:'Anticipate "why not five years ago / five years from now." Answer: agents, fakes and leapfrog economics all crossed their thresholds within the same 24-month window — that window is open now.'},
+  '<p class="lead a" style="--d:5;margin-top:26px;color:var(--teal);font-weight:600;">Too early in 2019. Too late in 2031. The window is now.</p></div>'},
 
 {ttl:'The Market', chap:'11 · The Market', ac:'#5eead4',
  html:'<div class="inner">'+
@@ -392,8 +373,7 @@ var SLIDES = [
   '<div class="bar-row a" style="--d:7"><span class="bl">Hiring & skills</span><span class="track"><span class="fill" data-w="62"></span></span><span class="bv">$450B+</span></div>'+
   '<div class="bar-row a" style="--d:8"><span class="bl">Trust & media integrity</span><span class="track"><span class="fill" data-w="55"></span></span><span class="bv">$300B+</span></div>'+
   '</div>'+
-  '<div class="bars-note a" style="--d:9">Directional arenas, not spreadsheet TAMs. Bottom-up example: Roster at $20/agent/mo across 1M managed agents = $240M ARR from a single venture\u2019s wedge.</div></div>',
- note:'Call these directional arenas, then anchor credibility bottom-up: Roster at $20 per agent per month across one million agents is $240M ARR — from one venture\u2019s wedge alone.'},
+  '<div class="bars-note a" style="--d:9">Directional arenas, not spreadsheet TAMs. Bottom-up example: Roster at $20/agent/mo across 1M managed agents = $240M ARR from a single venture\u2019s wedge.</div></div>'},
 
 {ttl:'The Decade', chap:'12 · The Decade', ac:'#5eead4',
  html:'<div class="inner">'+
@@ -405,8 +385,7 @@ var SLIDES = [
   '<div class="mph a" style="--d:4"><div class="y">PHASE 3 · 2029–31</div><b>Leapfrog offensive</b><span>Oga + Covenant + Remedy strike money, agency & health.</span></div>'+
   '<div class="mph a" style="--d:5"><div class="y">PHASE 4 · 2031–36</div><b>Civilization-scale</b><span>Mirror, Current, Atlas — the trillion-dollar endgames.</span></div>'+
   '</div>'+
-  '<p class="lead a" style="--d:6;margin-top:24px;">Each phase bankrolls the next. We raise velocity — not burn.</p></div>',
- note:'Capital efficiency is the headline: the sequence funds itself. We are raising for velocity, not for burn.'},
+  '<p class="lead a" style="--d:6;margin-top:24px;">Each phase bankrolls the next. We raise velocity — not burn.</p></div>'},
 
 {ttl:'The Ask', chap:'13 · The Ask', ac:'#fbbf24',
  html:'<div class="inner">'+
@@ -417,8 +396,7 @@ var SLIDES = [
   '<div class="ask a" style="--d:3"><div class="ai">⚙️</div><b>Founding engineers</b><p>Builders who think in decades and ship like the future depends on it — because here, it does.</p></div>'+
   '<div class="ask a" style="--d:4"><div class="ai">🤝</div><b>Capital partners</b><p>Investors who underwrite category creation, not category competition — patient, conviction-grade capital.</p></div>'+
   '<div class="ask a" style="--d:5"><div class="ai">🏢</div><b>First design partners</b><p>Two organizations to pilot Roster (agent HR) and Proven (verified skills) in the wild this year.</p></div>'+
-  '</div></div>',
- note:'Be specific and ask directly: two design partners this year for Roster and Proven; founding engineers who think in decades; patient capital. Then stop and listen.'},
+  '</div></div>'},
 
 {ttl:'The Mission', chap:'14 · The Mission', ac:'#5eead4',
  html:'<div class="inner center">'+PSI+
@@ -426,8 +404,7 @@ var SLIDES = [
   '<div class="close-quote a" style="--d:2">"We are not here to predict the future.<br/>We are here to invent it, name it,<br/>and give it a soul."</div>'+
   '<p class="lead a center" style="--d:3;text-align:center;">— The Founder, Chief Technology Psycho</p>'+
   '<div class="mission-counter a" style="--d:4">Mission counter · <b>8,000,000,000</b> humans — every one of them</div>'+
-  '<div class="a" style="--d:5;margin-top:30px;"><a href="index.html" class="back" style="pointer-events:auto;">← Return to the mothership</a></div></div>',
- note:'Stop talking. Let the counter sit on screen for five seconds of silence. Then open for questions.'}
+  '<div class="a" style="--d:5;margin-top:30px;"><a href="index.html" class="back" style="pointer-events:auto;">← Return to the mothership</a></div></div>'}
 ];
 
 /* ============ Scroll-snap engine ============ */
@@ -470,15 +447,6 @@ function fillBars(slide){
   });
 }
 
-/* notes */
-var notesOn=false;
-function renderNote(){ document.getElementById('noteText').textContent=SLIDES[idx].note||''; }
-function toggleNotes(force){
-  notesOn = typeof force==='boolean' ? force : !notesOn;
-  document.getElementById('notes').classList.toggle('show', notesOn);
-  document.getElementById('btnNotes').classList.toggle('on', notesOn);
-}
-
 /* autoplay */
 var autoOn=false, autoT=null, ringT=null, AUTO_MS=9000;
 var ring=document.getElementById('ringProg'), RC=132;
@@ -512,7 +480,7 @@ function syncToIndex(i){
   Array.prototype.forEach.call(slides, function(s,j){ s.classList.toggle('active', j===i); });
   document.getElementById('counter').innerHTML='<b>'+String(i+1).padStart(2,'0')+'</b> / '+N;
   document.getElementById('chap').textContent=SLIDES[i].chap||'';
-  fillBars(slides[i]); runCounters(slides[i]); renderNote();
+  fillBars(slides[i]);
   if(autoOn) autoStart();
   try{ history.replaceState(null,'','#'+(i+1)); }catch(e){}
 }
@@ -543,7 +511,6 @@ function back(){ goTo(idx-1); }
 
 document.getElementById('nextBtn').addEventListener('click', next);
 document.getElementById('prevBtn').addEventListener('click', back);
-document.getElementById('btnNotes').addEventListener('click', function(){ toggleNotes(); });
 document.getElementById('btnAuto').addEventListener('click', function(){ toggleAuto(); });
 document.getElementById('btnFull').addEventListener('click', function(){
   try{ document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); }catch(e){}
@@ -556,7 +523,6 @@ document.addEventListener('keydown', function(e){
   else if(e.key==='ArrowLeft'||e.key==='ArrowUp'||e.key==='PageUp'){ e.preventDefault(); back(); }
   else if(e.key==='Home'){ e.preventDefault(); goTo(0); }
   else if(e.key==='End'){ e.preventDefault(); goTo(N-1); }
-  else if(k==='n'){ toggleNotes(); }
   else if(k==='a'){ toggleAuto(); }
   else if(k==='q'){ location.href='index.html'; }
   else if(k==='f'){ try{ document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); }catch(err){} }
