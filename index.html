@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PSYCHE Group — Technology with a soul</title>
+<meta name="description" content="PSYCHE Group is a venture company building what has never been built — ten category-creation companies, one engine, one mission."/>
+<style>
+:root{
+  --bg:#05060f;
+  --bg2:#0a0d1e;
+  --card:rgba(255,255,255,.04);
+  --border:rgba(255,255,255,.09);
+  --text:#eef0fa;
+  --muted:#8e97b8;
+  --teal:#5eead4;
+  --violet:#a78bfa;
+  --rose:#fb7185;
+  --amber:#fbbf24;
+  --sky:#7dd3fc;
+  --mono:ui-monospace,"SF Mono","Cascadia Code","Roboto Mono",Consolas,monospace;
+  --font:"Inter","SF Pro Display",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.65;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+a{color:inherit;text-decoration:none;}
+.container{max-width:1140px;margin:0 auto;padding:0 26px;position:relative;z-index:2;}
+#stars{position:fixed;inset:0;z-index:0;}
+.grad{background:linear-gradient(94deg,var(--teal),var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent;}
+.mut{color:var(--muted);}
+
+/* reveal */
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .8s cubic-bezier(.22,.61,.36,1),transform .8s cubic-bezier(.22,.61,.36,1);}
+.reveal.visible{opacity:1;transform:none;}
+.d1{transition-delay:.08s}.d2{transition-delay:.16s}.d3{transition-delay:.24s}.d4{transition-delay:.32s}
+
+/* header */
+header{position:fixed;top:0;left:0;right:0;z-index:100;transition:.3s;border-bottom:1px solid transparent;}
+header.scrolled{background:rgba(5,6,15,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom-color:var(--border);}
+.nav{display:flex;align-items:center;justify-content:space-between;height:74px;}
+.logo{display:flex;align-items:center;gap:12px;}
+.logo b{font-size:17px;letter-spacing:.34em;font-weight:800;}
+.logo small{display:block;font-family:var(--mono);font-size:9.5px;color:var(--muted);letter-spacing:.28em;text-transform:uppercase;}
+.nav-links{display:flex;gap:30px;}
+.nav-links a{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);transition:.25s;}
+.nav-links a:hover{color:var(--teal);}
+.nav-links a.deck-link{color:var(--teal);border:1px solid rgba(94,234,212,.45);padding:8px 16px;border-radius:99px;transition:.25s;}
+.nav-links a.deck-link:hover{background:rgba(94,234,212,.12);}
+@media(max-width:760px){.nav-links{display:none;}}
+
+/* ---- HERO (upgraded) ---- */
+.hero{min-height:100vh;display:flex;align-items:center;padding:150px 0 90px;position:relative;overflow:hidden;}
+.psi-bg{position:absolute;right:-6%;top:50%;transform:translateY(-50%);width:min(52vw,640px);opacity:.1;pointer-events:none;z-index:1;}
+.psi-bg path{stroke-dasharray:160;stroke-dashoffset:160;animation:drawPsi 2.4s .4s cubic-bezier(.4,0,.2,1) forwards;}
+@keyframes drawPsi{to{stroke-dashoffset:0;}}
+.hero-glow{position:absolute;width:560px;height:560px;border-radius:50%;background:radial-gradient(circle,rgba(94,234,212,.1),rgba(167,139,250,.07) 45%,transparent 70%);filter:blur(50px);pointer-events:none;z-index:1;transform:translate(-50%,-50%);left:70%;top:40%;}
+.kicker{font-family:var(--mono);font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:var(--teal);display:flex;align-items:center;gap:12px;}
+.kicker::before{content:"";width:34px;height:1px;background:var(--teal);}
+.hero h1{font-size:clamp(42px,6.4vw,76px);line-height:1.06;font-weight:800;letter-spacing:-.03em;margin:26px 0 24px;max-width:840px;}
+.hero h1 .ln{display:block;overflow:hidden;padding-bottom:.08em;margin-bottom:-.08em;}
+.hero h1 .w{display:inline-block;opacity:0;transform:translateY(75%);animation:wordUp .85s cubic-bezier(.22,.61,.36,1) forwards;}
+@keyframes wordUp{to{opacity:1;transform:none;}}
+.hero p.lead{font-size:clamp(16.5px,2vw,19.5px);color:var(--muted);max-width:620px;}
+
+/* floating pillar chips */
+.chip-wrap{position:absolute;z-index:1;transition:transform .9s cubic-bezier(.22,.61,.36,1);}
+.chip{display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:.22em;color:var(--chip,#5eead4);border:1px solid var(--chip,#5eead4);border-opacity:.4;border-radius:99px;padding:7px 14px;background:rgba(10,13,30,.55);opacity:.5;cursor:pointer;animation:chipFloat 8s ease-in-out infinite;transition:opacity .3s,border-opacity .3s;backdrop-filter:blur(4px);}
+.chip:hover{opacity:1;border-opacity:1;}
+@keyframes chipFloat{0%,100%{transform:translateY(0) rotate(-1deg);}50%{transform:translateY(-13px) rotate(1.5deg);}}
+@media(max-width:900px),(hover:none){.chip-wrap,.hero-glow{display:none;}}
+@media (prefers-reduced-motion: reduce){.chip,.psi-bg path{animation:none;} .psi-bg path{stroke-dashoffset:0;} .hero h1 .w{animation-duration:.01s;} }
+
+/* hero chapter ticker */
+.ticker{margin-top:36px;display:inline-block;min-width:min(440px,100%);border:1px solid var(--border);border-left:2px solid rgba(94,234,212,.55);border-radius:16px;padding:18px 22px;background:rgba(10,13,30,.5);backdrop-filter:blur(8px);cursor:pointer;transition:border-color .3s,background .3s;}
+.ticker:hover{border-color:rgba(94,234,212,.6);background:rgba(94,234,212,.05);}
+.t-ch{font-family:var(--mono);font-size:10px;letter-spacing:.26em;color:var(--teal);display:flex;justify-content:space-between;gap:14px;}
+.t-ch .t-hint{color:var(--muted);}
+#tInner{transition:opacity .38s,transform .38s;}
+#tInner.out{opacity:0;transform:translateY(10px);}
+.t-name{font-size:20px;font-weight:800;letter-spacing:.01em;margin-top:7px;}
+.t-name .grad{font-weight:800;}
+.t-line{font-size:14px;color:var(--muted);margin-top:2px;}
+.t-dots{display:flex;gap:5px;margin-top:12px;}
+.t-dot{width:14px;height:3px;border-radius:99px;background:rgba(255,255,255,.14);transition:.3s;}
+.t-dot.on{background:var(--teal);width:26px;}
+
+.hero-stats{display:flex;gap:44px;margin-top:44px;flex-wrap:wrap;}
+.hstat .v{font-size:clamp(26px,3.4vw,34px);font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums;}
+.hstat .l{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.18em;text-transform:uppercase;margin-top:2px;}
+.scroll-hint{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:10.5px;letter-spacing:.3em;color:var(--muted);text-transform:uppercase;animation:pulse 2.4s ease-in-out infinite;z-index:2;}
+@keyframes pulse{0%,100%{opacity:.4;}50%{opacity:1;}}
+
+/* sections */
+section{padding:110px 0;position:relative;}
+.sec-head{max-width:680px;margin-bottom:64px;}
+h2{font-size:clamp(30px,4vw,44px);font-weight:800;letter-spacing:-.028em;line-height:1.12;margin:16px 0 14px;}
+.sec-head p{color:var(--muted);font-size:17px;}
+
+/* thesis */
+.thesis{background:linear-gradient(180deg,transparent,rgba(124,58,237,.05) 40%,transparent);}
+.principles{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+.principle{border:1px solid var(--border);background:var(--card);border-radius:18px;padding:28px;transition:.3s;}
+.principle:hover{transform:translateY(-5px);border-color:rgba(94,234,212,.35);background:rgba(94,234,212,.05);}
+.principle .n{font-family:var(--mono);font-size:12px;color:var(--teal);letter-spacing:.2em;}
+.principle h3{font-size:18px;font-weight:800;margin:12px 0 8px;}
+.principle p{font-size:14.5px;color:var(--muted);}
+@media(max-width:860px){.principles{grid-template-columns:1fr 1fr;}}
+@media(max-width:560px){.principles{grid-template-columns:1fr;}}
+
+/* ventures */
+.ventures-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:18px;}
+.venture{border:1px solid var(--border);background:var(--card);border-radius:20px;padding:30px;cursor:pointer;transition:.3s;position:relative;overflow:hidden;display:flex;flex-direction:column;}
+.venture:hover{transform:translateY(-5px);border-color:rgba(167,139,250,.4);background:rgba(167,139,250,.06);box-shadow:0 22px 60px rgba(2,6,23,.5);}
+.v-top{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;}
+.v-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,rgba(94,234,212,.14),rgba(167,139,250,.14));color:var(--teal);flex:none;}
+.v-status{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;padding:6px 12px;border-radius:99px;border:1px solid var(--border);color:var(--muted);white-space:nowrap;}
+.v-status.s-build{color:#05060f;background:var(--teal);border-color:transparent;}
+.v-status.s-design{color:var(--teal);border-color:rgba(94,234,212,.4);}
+.v-name{font-size:22px;font-weight:800;margin:20px 0 2px;letter-spacing:-.01em;}
+.v-by{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.22em;text-transform:uppercase;}
+.v-mission{font-size:14.5px;color:var(--muted);margin-top:14px;flex:1;}
+.v-why{margin-top:14px;padding:12px 15px;border-left:2px solid rgba(94,234,212,.5);background:rgba(94,234,212,.05);border-radius:0 10px 10px 0;font-size:13px;font-style:italic;color:#c3cbe4;line-height:1.55;}
+.v-open{display:inline-flex;align-items:center;gap:7px;margin-top:16px;font-family:var(--mono);font-size:11.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);transition:gap .25s;}
+.venture:hover .v-open{gap:11px;}
+
+/* engine */
+.engine{background:linear-gradient(180deg,transparent,rgba(20,184,166,.05) 45%,transparent);}
+.engine-grid{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;}
+@media(max-width:860px){.engine-grid{grid-template-columns:1fr;}}
+.core-diagram{width:100%;max-width:500px;margin:0 auto;display:block;}
+.engines-list{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:26px;}
+@media(max-width:560px){.engines-list{grid-template-columns:1fr;}}
+.eng{border:1px solid var(--border);background:var(--card);border-radius:14px;padding:14px 16px;}
+.eng b{font-size:14px;display:block;}
+.eng p{font-size:12.5px;color:var(--muted);}
+.eng .tag{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;display:block;margin-bottom:2px;}
+.fly-note{grid-column:1/-1;margin-top:12px;border-left:2px solid var(--teal);padding:6px 0 6px 18px;font-size:14.5px;color:var(--muted);font-style:italic;}
+
+/* roadmap */
+.timeline{position:relative;margin-top:10px;padding-left:30px;border-left:1px solid var(--border);}
+.phase{position:relative;padding-bottom:44px;}
+.phase:last-child{padding-bottom:0;}
+.phase::before{content:"";position:absolute;left:-35.5px;top:6px;width:11px;height:11px;border-radius:50%;background:var(--bg);border:2px solid var(--teal);}
+.phase.now::before{background:var(--teal);box-shadow:0 0 16px rgba(94,234,212,.6);}
+.phase .yrs{font-family:var(--mono);font-size:12px;letter-spacing:.2em;color:var(--teal);text-transform:uppercase;}
+.phase h3{font-size:19px;font-weight:800;margin:8px 0 6px;}
+.phase p{font-size:14.5px;color:var(--muted);max-width:640px;}
+.phase .vlist{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;}
+.phase .vlist span{font-family:var(--mono);font-size:11px;font-weight:700;padding:6px 13px;border-radius:99px;background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--text);}
+
+/* manifesto */
+.manifesto{text-align:center;}
+.manifesto blockquote{font-size:clamp(21px,3.2vw,30px);font-weight:600;line-height:1.5;letter-spacing:-.015em;max-width:840px;margin:36px auto;background:linear-gradient(120deg,#fff,#c8d0ee);-webkit-background-clip:text;background-clip:text;color:transparent;}
+.founder{display:inline-flex;align-items:center;gap:14px;margin-top:8px;}
+.founder .fsig{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--violet));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:19px;color:#05060f;}
+.founder .fwho{text-align:left;}
+.founder .fwho b{display:block;font-size:15px;}
+.founder .fwho span{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;}
+.impact-line{margin-top:56px;font-family:var(--mono);font-size:clamp(13px,2vw,16px);letter-spacing:.12em;color:var(--muted);text-transform:uppercase;}
+.impact-line b{color:var(--amber);font-size:clamp(18px,2.6vw,24px);letter-spacing:.02em;}
+.cta-link{display:inline-block;border:1px solid rgba(94,234,212,.5);color:var(--teal);padding:15px 30px;border-radius:12px;font-family:var(--mono);font-size:12px;letter-spacing:.22em;text-transform:uppercase;transition:.25s;margin-top:36px;}
+.cta-link:hover{background:rgba(94,234,212,.1);}
+
+/* footer */
+footer{border-top:1px solid var(--border);padding:46px 0 40px;}
+.foot{display:flex;justify-content:space-between;align-items:flex-start;gap:26px;flex-wrap:wrap;}
+.foot .mut{font-size:13px;}
+.foot-links{display:flex;gap:26px;font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);}
+.foot-links a:hover{color:var(--teal);}
+
+/* modal */
+#modal{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;padding:22px;}
+#modal.show{display:flex;}
+.modal-bg{position:absolute;inset:0;background:rgba(3,4,10,.7);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);animation:fade .3s;}
+@keyframes fade{from{opacity:0;}to{opacity:1;}}
+.modal-card{position:relative;width:100%;max-width:620px;max-height:86vh;overflow-y:auto;background:var(--bg2);border:1px solid var(--border);border-radius:22px;padding:38px;animation:pop .4s cubic-bezier(.22,.61,.36,1);scrollbar-width:thin;}
+@keyframes pop{from{opacity:0;transform:translateY(22px) scale(.97);}to{opacity:1;transform:none;}}
+.modal-close{position:absolute;top:18px;right:18px;width:40px;height:40px;border-radius:50%;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:16px;cursor:pointer;transition:.25s;}
+.modal-close:hover{transform:rotate(90deg);border-color:var(--teal);}
+.m-head{display:flex;align-items:center;gap:16px;margin-bottom:6px;}
+.m-head .v-icon{width:56px;height:56px;}
+.m-rows{margin-top:22px;}
+.m-row{padding:16px 0;border-top:1px solid var(--border);}
+.m-row .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--teal);font-weight:700;}
+.m-row p{font-size:14.5px;color:#c9cfe6;margin-top:5px;}
+.m-why{margin:20px 0 2px;padding:16px 20px;border-left:2px solid;border-image:linear-gradient(180deg,#5eead4,#a78bfa) 1;background:rgba(255,255,255,.03);border-radius:0 12px 12px 0;font-size:15px;font-style:italic;color:#dbe0f2;line-height:1.6;}
+</style>
+</head>
+<body>
+<canvas id="stars"></canvas>
+
+<header id="header">
+  <div class="container nav">
+    <a href="#top" class="logo">
+      <svg width="36" height="36" viewBox="0 0 32 44" fill="none" aria-hidden="true">
+        <defs><linearGradient id="pl" x1="0" y1="0" x2="32" y2="44"><stop stop-color="#5eead4"/><stop offset="1" stop-color="#a78bfa"/></linearGradient></defs>
+        <path d="M16 4v36M4 11c0 15 5.5 19.5 12 19.5S28 26 28 11" stroke="url(#pl)" stroke-width="3.4" stroke-linecap="round"/>
+      </svg>
+      <span><b>PSYCHE</b><small>Group</small></span>
+    </a>
+    <nav class="nav-links">
+      <a href="#thesis">Thesis</a><a href="#ventures">Ventures</a><a href="#engine">Engine</a><a href="#roadmap">Roadmap</a><a href="#manifesto">Manifesto</a><a href="deck.html" class="deck-link">▶&nbsp;Pitch&nbsp;Deck</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ============ HERO ============ -->
+<section class="hero" id="top">
+  <div class="hero-glow" id="heroGlow"></div>
+  <svg class="psi-bg" viewBox="0 0 32 44" fill="none" aria-hidden="true"><path d="M16 4v36M4 11c0 15 5.5 19.5 12 19.5S28 26 28 11" stroke="url(#pl)" stroke-width="2.2" stroke-linecap="round"/></svg>
+  <div id="chipsLayer"></div>
+  <div class="container">
+    <div class="kicker reveal">A venture company · est. 2026 · Lagos → the world</div>
+    <h1 aria-label="We invent what has never been invented.">
+      <span class="ln"><span class="w" style="animation-delay:.15s">We</span> <span class="w" style="animation-delay:.25s">invent</span> <span class="w" style="animation-delay:.35s">what</span> <span class="w" style="animation-delay:.45s">has</span></span>
+      <span class="ln"><span class="w" style="animation-delay:.55s">never</span> <span class="w grad" style="animation-delay:.67s">been</span> <span class="w grad" style="animation-delay:.79s">invented.</span></span>
+    </h1>
+    <p class="lead reveal d2">PSYCHE Group builds the industries that don't exist yet — ten category-creation companies claiming the future of truth, work, money, skill, intelligence, health, energy, foresight, memory and shelter. <b style="color:var(--text);">Not apps. New pillars of civilization.</b></p>
+
+    <div class="ticker reveal d3" id="heroTicker" role="button" tabindex="0" aria-label="Cycle through the ten ventures">
+      <div class="t-ch"><span id="tCh">CHAPTER 01 / 10</span><span class="t-hint">TAP TO OPEN FILE ↗</span></div>
+      <div id="tInner">
+        <div class="t-name"><span class="grad" id="tName">Roster</span></div>
+        <div class="t-line" id="tLine">HR for the machines humanity just hired</div>
+      </div>
+      <div class="t-dots" id="tDots"></div>
+    </div>
+
+    <div class="hero-stats reveal d4">
+      <div class="hstat"><div class="v" id="hv1">0</div><div class="l">ventures</div></div>
+      <div class="hstat"><div class="v"><span id="hv2">0</span>B</div><div class="l">humans — every one</div></div>
+      <div class="hstat"><div class="v" id="hv3">0</div><div class="l">civilization pillars</div></div>
+      <div class="hstat"><div class="v">∞</div><div class="l">obsession</div></div>
+    </div>
+  </div>
+  <div class="scroll-hint">Scroll to enter the lab ↓</div>
+</section>
+
+<!-- ============ THESIS ============ -->
+<section class="thesis" id="thesis">
+  <div class="container">
+    <div class="sec-head">
+      <div class="kicker reveal">The thesis</div>
+      <h2 class="reveal d1">Technology with <span class="grad">a soul.</span></h2>
+      <p class="reveal d2">Most companies are built to capture attention. We are built to give humanity new capabilities. Every PSYCHE venture follows six laws — non-negotiable, forever.</p>
+    </div>
+    <div class="principles">
+      <div class="principle reveal d1"><div class="n">LAW /01</div><h3>Help one human, then eight billion</h3><p>If it doesn't measurably improve a single life, it doesn't ship. Worldwide scale is discipline, not an excuse.</p></div>
+      <div class="principle reveal d2"><div class="n">LAW /02</div><h3>Own infrastructure, not attention</h3><p>We build rails, protocols, and systems — the things civilization quietly runs on.</p></div>
+      <div class="principle reveal d3"><div class="n">LAW /03</div><h3>Invent, never imitate</h3><p>We only enter markets that don't exist yet. If there's an incumbent, we're already too late.</p></div>
+      <div class="principle reveal d1"><div class="n">LAW /04</div><h3>Privacy is a human right</h3><p>Your data belongs to you. Our ventures are designed to need less, not harvest more.</p></div>
+      <div class="principle reveal d2"><div class="n">LAW /05</div><h3>Wild is a strategy</h3><p>In a world of incremental thinking, audacity is the last unfair advantage. We use it.</p></div>
+      <div class="principle reveal d3"><div class="n">LAW /06</div><h3>The whole &gt; the sum</h3><p>Every venture makes every other venture stronger. That's why PSYCHE is one company, not ten.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ VENTURES ============ -->
+<section id="ventures">
+  <div class="container">
+    <div class="sec-head">
+      <div class="kicker reveal">The portfolio</div>
+      <h2 class="reveal d1">Ten ventures.<br/>Zero incumbents.</h2>
+      <p class="reveal d2">Each one names an industry that doesn't exist yet — and each carries a reason worth fighting for. Click any venture to open its full file.</p>
+    </div>
+    <div class="ventures-grid" id="venturesGrid"></div>
+  </div>
+</section>
+
+<!-- ============ ENGINE ============ -->
+<section class="engine" id="engine">
+  <div class="container engine-grid">
+    <div>
+      <div class="kicker reveal">The masterstroke</div>
+      <h2 class="reveal d1">Ten ventures,<br/><span class="grad">one nervous system.</span></h2>
+      <p class="reveal d2 mut">Each venture contributes one <b style="color:var(--text);">pillar of civilization</b> to PSYCHE Core — and every sibling inherits the strength of the other nine:</p>
+      <div class="engines-list" id="enginesList"></div>
+      <div class="fly-note reveal">"Each company makes the next one cheaper to build and harder to kill. That's not a portfolio. That's a flywheel with a soul."</div>
+    </div>
+    <div class="reveal d2">
+      <svg class="core-diagram" viewBox="0 0 520 520" fill="none" aria-label="Psyche Core — ten pillars diagram">
+        <defs>
+          <linearGradient id="cg1" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#5eead4"/><stop offset="1" stop-color="#a78bfa"/></linearGradient>
+          <style>.orb{animation:spin 60s linear infinite;transform-origin:260px 260px;}@keyframes spin{to{transform:rotate(360deg);}}</style>
+        </defs>
+        <g class="orb" opacity=".5">
+          <circle cx="260" cy="260" r="235" stroke="rgba(255,255,255,.07)" stroke-dasharray="2 9"/>
+          <circle cx="260" cy="25" r="4" fill="#5eead4"/><circle cx="495" cy="260" r="4" fill="#a78bfa"/>
+          <circle cx="260" cy="495" r="4" fill="#fb7185"/><circle cx="25" cy="260" r="4" fill="#fbbf24"/>
+        </g>
+        <g stroke="rgba(255,255,255,.12)" stroke-dasharray="2 5">
+          <line x1="260" y1="260" x2="260" y2="65"/><line x1="260" y1="260" x2="375" y2="102"/>
+          <line x1="260" y1="260" x2="445" y2="200"/><line x1="260" y1="260" x2="445" y2="320"/>
+          <line x1="260" y1="260" x2="375" y2="418"/><line x1="260" y1="260" x2="260" y2="455"/>
+          <line x1="260" y1="260" x2="145" y2="418"/><line x1="260" y1="260" x2="75" y2="320"/>
+          <line x1="260" y1="260" x2="75" y2="200"/><line x1="260" y1="260" x2="145" y2="102"/>
+        </g>
+        <circle cx="260" cy="260" r="82" fill="rgba(124,58,237,.1)" stroke="url(#cg1)" stroke-width="1.5"/>
+        <path d="M260 218v68M237 231c0 29 13 37 23 37s23-8 23-37" stroke="url(#cg1)" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+        <text x="260" y="368" text-anchor="middle" fill="#8e97b8" font-family="ui-monospace,monospace" font-size="11" letter-spacing="4">PSYCHE CORE</text>
+        <g font-family="ui-monospace,monospace" font-size="10" letter-spacing="1.2" id="pillars"></g>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ROADMAP ============ -->
+<section id="roadmap">
+  <div class="container">
+    <div class="sec-head">
+      <div class="kicker reveal">The decade</div>
+      <h2 class="reveal d1">2026 → 2036.<br/>Sequenced to self-fund.</h2>
+      <p class="reveal d2">We don't build ten companies at once. Each phase bankrolls and de-risks the next — revenue early, civilization-scale at the end.</p>
+    </div>
+    <div class="timeline">
+      <div class="phase now reveal d1">
+        <div class="yrs">Phase 1 · 2026 — 2027</div>
+        <h3>First contact with reality</h3>
+        <p>Start where the future is already arriving: companies hiring AI agents today, and workers whose diplomas no longer speak for them. Immediate pain, immediate revenue.</p>
+        <div class="vlist"><span>ROSTER</span><span>PROVEN</span></div>
+      </div>
+      <div class="phase reveal d2">
+        <div class="yrs">Phase 2 · 2027 — 2030</div>
+        <h3>Trust &amp; memory</h3>
+        <p>As deepfakes flood every screen, Verity becomes the enterprise trust rail. Everlight converts that trust into lifetime — and beyond-lifetime — relationships that fund deep R&amp;D.</p>
+        <div class="vlist"><span>VERITY</span><span>EVERLIGHT</span></div>
+      </div>
+      <div class="phase reveal d3">
+        <div class="yrs">Phase 3 · 2029 — 2031</div>
+        <h3>The leapfrog offensive</h3>
+        <p>With trust and labor secured, we strike the biggest broken systems at once: intelligence for every informal business, machine money for the agent economy, and healthcare for the places doctors never reached.</p>
+        <div class="vlist"><span>OGA</span><span>COVENANT</span><span>REMEDY</span></div>
+      </div>
+      <div class="phase reveal d4">
+        <div class="yrs">Phase 4 · 2031 — 2036</div>
+        <h3>Civilization-scale</h3>
+        <p>The long games mature: simulate reality before it's spent, light up the energy-poor world, and give a climate-displaced generation a way to move with dignity.</p>
+        <div class="vlist"><span>MIRROR</span><span>CURRENT</span><span>ATLAS</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MANIFESTO ============ -->
+<section class="manifesto" id="manifesto">
+  <div class="container">
+    <div class="kicker reveal" style="justify-content:center;">The manifesto</div>
+    <blockquote class="reveal d1">"They will call it madness — ten industries that don't exist, claimed by one company that barely does. Let them. Every pillar of civilization was once somebody's 'impossible.' We are not here to predict the future. We are here to invent it, name it, and give it a soul."</blockquote>
+    <div class="founder reveal d2">
+      <div class="fsig">Ψ</div>
+      <div class="fwho"><b>The Founder</b><span>Chief Technology Psycho · PSYCHE Group</span></div>
+    </div>
+    <div class="impact-line reveal d3">Mission counter · <b>8,000,000,000</b> humans — every one of them</div>
+    <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:36px;" class="reveal d4">
+      <a href="#ventures" class="cta-link" style="margin-top:0;">Open the venture files →</a>
+      <a href="deck.html" class="cta-link" style="margin-top:0;border-color:rgba(251,191,36,.55);color:var(--amber);">🎬 Investor deck →</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container foot">
+    <div>
+      <b style="letter-spacing:.3em;font-size:14px;">PSYCHE <span class="mut">GROUP</span></b>
+      <div class="mut" style="margin-top:8px;">Technology with a soul.<br/>Born in Lagos, Nigeria · Built for every human everywhere.</div>
+    </div>
+    <div class="foot-links"><a href="#thesis">Thesis</a><a href="#ventures">Ventures</a><a href="#roadmap">Roadmap</a><a href="deck.html">Deck</a><a href="#top">Ψ</a></div>
+  </div>
+</footer>
+
+<!-- ============ MODAL ============ -->
+<div id="modal" role="dialog" aria-modal="true">
+  <div class="modal-bg" id="modalBg"></div>
+  <div class="modal-card">
+    <button class="modal-close" id="modalClose" aria-label="Close">✕</button>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ============ Venture data ============ */
+var ICONS = {
+  verity:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4.5 12.5l5 5L19.5 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  roster:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="4" y="3.5" width="16" height="17" rx="2.5" stroke="currentColor" stroke-width="1.8"/><path d="M8.5 8.5h7M8.5 12h7M8.5 15.5h4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
+  proven:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="9.5" r="5.5" stroke="currentColor" stroke-width="1.8"/><path d="M9.2 14l-1.7 6.5L12 18l4.5 2.5L14.8 14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 9.5l1.5 1.5 3-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  mirror:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.8"/><path d="M12 7v5l3.5 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  everlight:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 3c2.6 2.6 4 4.9 4 7a4 4 0 11-8 0c0-2.1 1.4-4.4 4-7z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M7.5 21h9M9 17.5v2M15 17.5v2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
+  oga:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="7.5" r="3.4" stroke="currentColor" stroke-width="1.8"/><path d="M4.5 20c1.2-3.8 4-5.5 7.5-5.5s6.3 1.7 7.5 5.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
+  covenant:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M9 12l2.2 2.2L15.5 10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 21c-4.5-1.2-7-4.6-7-9V6.5L12 3.5l7 3V12c0 4.4-2.5 7.8-7 9z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>',
+  remedy:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M3.5 12h4l2-5 3.5 10 2.5-5h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  current:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M13 2.5L5 13.5h5.5L10 21.5l8-11h-5.5l.5-8z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>',
+  atlas:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.8"/><path d="M3.5 12h17M12 3.5c2.5 2.3 3.8 5.1 3.8 8.5s-1.3 6.2-3.8 8.5c-2.5-2.3-3.8-5.1-3.8-8.5S9.5 5.8 12 3.5z" stroke="currentColor" stroke-width="1.8"/></svg>'
+};
+
+var VENTURES = [
+  {id:'roster', name:'Roster', mission:'The employer-of-record for digital workers — identity, budgets, permissions, reviews and retirement for AI employees.', status:'In build', sclass:'s-build', primitive:'LABOR', line:'HR for the machines humanity just hired',
+   purpose:'Machine labor needs a rulebook before chaos writes one. Roster makes hiring an AI as safe and accountable as hiring a human. Whoever writes the rules of digital labor doesn\u2019t just make money — they govern the economics of the century.',
+   problem:'Companies are hiring fleets of AI agents with zero HR infrastructure — no accountability, no audit trail, no offboarding, no law.',
+   why:'Agent adoption is exploding right now, and regulation is chasing it. Somebody must become the system of record for non-human labor.',
+   model:'Per-agent SaaS + compliance tooling. Rippling economics, for a workforce that never sleeps.',
+   fly:'Every PSYCHE venture staffs itself through Roster first — it eats, then it feeds the whole family.'},
+  {id:'proven', name:'Proven', mission:'The credit score for competence — AI-verified, living proof of what a human can actually do.', status:'In design', sclass:'s-design', primitive:'SKILL', line:'proof of what humans can actually do',
+   purpose:'Degrees measure access, not ability — and that lie buries billions of brilliant humans. Proven makes what you can do speak louder than where you were born, unlocking the largest untapped resource on Earth: skilled people nobody can verify.',
+   problem:'Degrees are dying, resumes lie, and billions of skilled humans are invisible to opportunity for lack of paper.',
+   why:'AI can now proctor and evaluate real work remotely, and global hiring is going skills-first.',
+   model:'Free for talent. Employers pay per verified match; governments pay for workforce intelligence.',
+   fly:'Every verified human and every verified skill sharpens the competence graph inside PSYCHE Core.'},
+  {id:'verity', name:'Verity', mission:'The trust layer for reality — cryptographic, camera-to-courtroom proof of what is real.', status:'In design', sclass:'s-design', primitive:'TRUTH', line:'the trust layer for reality',
+   purpose:'When anything can be forged, truth stops being a virtue and becomes infrastructure. Verity is the button humanity presses to know what is real — civilization has never needed a source of truth this badly, and nobody owns it yet.',
+   problem:'Deepfakes are becoming perfect. Soon no court, newsroom, insurer or marketplace can take pixels at face value.',
+   why:'Content-authenticity standards exist, but nobody owns the button that answers "is this real?"',
+   model:'API calls and enterprise licensing — Verisign economics for the post-truth era.',
+   fly:'Becomes the truth primitive of PSYCHE Core — inherited by all nine siblings.'},
+  {id:'everlight', name:'Everlight', mission:'The Afterlife OS — an AI executor securing your digital existence, and a living archive of memory and wisdom for the humans you love.', status:'Concept', sclass:'', primitive:'MEMORY', line:'an afterlife OS for every life',
+   purpose:'No life should disappear with a password. Everlight protects everything you build in life and carries your wisdom, voice and love to the people you leave behind. Death is inevitable — being forgotten, and financially erased, shouldn\u2019t be.',
+   problem:'Everyone dies with locked devices and scattered digital wealth — and the largest wealth transfer in history ($68T) is colliding with zero planning infrastructure.',
+   why:'Digital-inheritance laws are arriving, and generational models make "living memory" possible for the first time.',
+   model:'Lifetime subscriptions. The churn rate of this business is, quite literally, zero.',
+   fly:'Safeguards everything every other PSYCHE venture helps a human build. The loop of a life, closed with love.'},
+  {id:'oga', name:'Oga', mission:'The Pocket CEO — a voice-first AI chief-of-staff for the world\u2019s 400M informal businesses. Runs money, stock, credit and customers.', status:'Blueprint', sclass:'', primitive:'AGENCY', line:'a CEO for every trader on Earth',
+   purpose:'400 million informal businesses run whole economies with zero tools — invisible to banks because nobody speaks their language. Oga does. When the market woman gets an MBA-grade assistant, an entire continent\u2019s GDP moves.',
+   problem:'More than half the planet works in businesses too small for software — invisible to banks, credit and growth.',
+   why:'Voice AI now speaks Pidgin, Yor\u00f9b\u00e1, Hausa, Igbo, Swahili — and the smartphone is already in the trader\u2019s hand.',
+   model:'Transaction fees + credit floats. Moniepoint and Wave proved the billion-dollar outcome; AI makes it continental.',
+   fly:'The data flywheel becomes the bank of the informal economy — and Covenant\u2019s biggest customer.'},
+  {id:'covenant', name:'Covenant', mission:'Visa for AI agents — wallets, identity, escrow and machine-speed contracts for the coming agent economy.', status:'R&D', sclass:'', primitive:'MONEY', line:'the bank for beings without passports',
+   purpose:'Billions of AI agents are about to buy, sell and negotiate — and none can open a bank account. Every era\u2019s biggest winner built its money rails: SWIFT, Visa, M-Pesa. Covenant is the financial plumbing of the agent economy. That is the math of empires.',
+   problem:'By 2030, billions of AI agents will buy, sell and negotiate — but an AI cannot open a bank account.',
+   why:'Agent commerce is starting now, and financial infrastructure is the biggest prize of any era.',
+   model:'A fraction of every machine transaction on Earth. Infrastructure scale. Civilization scale.',
+   fly:'The money rail of PSYCHE Core — every venture settles through it by default.'},
+  {id:'remedy', name:'Remedy', mission:'One AI doctor per village — triage in local languages, nurse-powered micro-clinics, diagnostics through a phone camera.', status:'Blueprint', sclass:'', primitive:'HEALTH', line:'a doctor in every village',
+   purpose:'Where you were born should never decide whether a doctor ever sees you. One doctor per 5,000 people can\u2019t be fixed by training alone — only by leapfrogging. M-Pesa skipped the bank branch; Remedy skips the hospital queue.',
+   problem:'Nigeria has roughly one doctor per 5,000 people. The world cannot train its way out of this gap — it must leapfrog it.',
+   why:'On-device medical AI is clearing regulatory bars, and M-Pesa already proved leapfrogging beats retrofitting.',
+   model:'Governments, insurers and NGOs pay per covered life; families pay cents per consult.',
+   fly:'Health trust (via Verity) becomes prevention programs, becomes national-scale contracts.'},
+  {id:'mirror', name:'Mirror', mission:'The simulation economy — a wind tunnel for reality. Rehearse launches, prices and policies inside living simulated cities of AI agents.', status:'Research', sclass:'', primitive:'FORESIGHT', line:'a wind tunnel for reality',
+   purpose:'We test airplanes in wind tunnels — but launch billion-dollar decisions on gut instinct. Mirror lets humanity rehearse the future safely before living it, replacing guesswork with rehearsal. Certainty is the rarest product on Earth. Mirror sells it.',
+   problem:'We test airplanes in wind tunnels, but test billion-dollar decisions on luck and slide decks.',
+   why:'Millions of AI agents can now behave like real consumers. Palantir-scale simulation is suddenly buildable.',
+   model:'Enterprise subscriptions + per-simulation compute. It sells certainty — the rarest product on Earth.',
+   fly:'Every PSYCHE venture is rehearsed in Mirror before launch. Failure becomes cheap; ambition becomes free.'},
+  {id:'current', name:'Current', mission:'The energy internet — peer-to-peer solar microgrids that generate, store and trade power where grids never reached.', status:'Research', sclass:'', primitive:'ENERGY', line:'sunlight, traded like currency',
+   purpose:'It is absurd that 600 million people sit in darkness beneath the best sunlight on Earth. Current lets communities generate, store and trade their own power. When a village can sell its surplus sunshine, poverty loses its favorite weapon.',
+   problem:'600M Africans live without electricity under the best solar resource on Earth — waiting on grids that may never arrive.',
+   why:'Solar and batteries have fallen off a price cliff; agent-driven trading (hello, Covenant) makes micro-markets viable.',
+   model:'Hardware margin + a cut of every traded kilowatt-hour. The utility that was never built.',
+   fly:'Power unlocks connectivity, and connectivity unlocks every other PSYCHE venture deeper into the world.'},
+  {id:'atlas', name:'Atlas', mission:'The Climate Relocation OS — pricing, planning and financing humanity\u2019s moves as climate redraws the map of where life can thrive.', status:'Concept', sclass:'', primitive:'SHELTER', line:'the moving company of civilization',
+   purpose:'The largest migration in human history is coming, and no infrastructure exists anywhere for moving a life with dignity: home, farm, business, community. Atlas makes sure that when a billion people must move, they move humanely.',
+   problem:'By 2050, over a billion people may need to relocate due to climate stress — and there is no infrastructure anywhere for moving a life.',
+   why:'Climate-risk data is now granular to the street level, and finance is waking up. The first mover becomes the moving company of civilization.',
+   model:'Advisory fees + financing take-rate on relocation and resilient-site development; insurers and governments pay for risk intelligence.',
+   fly:'Every move finances resilient land — which becomes a customer for Current\u2019s energy, Remedy\u2019s clinics, and the whole family after them.'}
+];
+
+/* ============ Ten pillars (engine) ============ */
+var PILLARS = [
+  ['TRUTH','#5eead4'], ['LABOR','#a78bfa'], ['MONEY','#fbbf24'], ['SKILL','#fb7185'], ['AGENCY','#7dd3fc'],
+  ['HEALTH','#5eead4'], ['ENERGY','#a78bfa'], ['FORESIGHT','#fbbf24'], ['MEMORY','#fb7185'], ['SHELTER','#7dd3fc']
+];
+var PILLAR_POS = [[260,65],[375,102],[445,200],[445,320],[375,418],[260,455],[145,418],[75,320],[75,200],[145,102]];
+
+(function renderPillars(){
+  var g = document.getElementById('pillars'), html='', i, x, y;
+  for(i=0;i<10;i++){
+    x=PILLAR_POS[i][0]; y=PILLAR_POS[i][1];
+    html += '<g><rect x="'+(x-56)+'" y="'+(y-16)+'" width="112" height="32" rx="16" fill="#0a0d1e" stroke="'+PILLARS[i][1]+'" stroke-opacity=".55"/>'+
+            '<text x="'+x+'" y="'+(y+4)+'" text-anchor="middle" fill="'+PILLARS[i][1]+'">'+PILLARS[i][0]+'</text></g>';
+  }
+  g.innerHTML = html;
+})();
+
+(function renderEngineList(){
+  var list = document.getElementById('enginesList');
+  var short = {
+    TRUTH:'Verity — proof of what is real', LABOR:'Roster — AI workforce on demand', MONEY:'Covenant — machine-speed finance',
+    SKILL:'Proven — verified human capability', AGENCY:'Oga — intelligence in every pocket', HEALTH:'Remedy — care that leapfrogs distance',
+    ENERGY:'Current — power people can trade', FORESIGHT:'Mirror — decisions rehearsed first', MEMORY:'Everlight — continuity beyond a lifetime',
+    SHELTER:'Atlas — moving a life, with dignity'
+  };
+  PILLARS.forEach(function(p,i){
+    var d=document.createElement('div');
+    d.className='eng reveal d'+((i%3)+1);
+    d.innerHTML='<div><span class="tag" style="color:'+p[1]+'">'+p[0]+'</span><b>'+short[p[0]].split(' — ')[1]+'</b><p>'+short[p[0]].split(' — ')[0]+'</p></div>';
+    list.appendChild(d);
+  });
+})();
+
+/* ============ Render ventures ============ */
+var grid = document.getElementById('venturesGrid');
+VENTURES.forEach(function(v,i){
+  var card = document.createElement('article');
+  card.className = 'venture reveal d'+((i%3)+1);
+  card.innerHTML =
+    '<div class="v-top"><div class="v-icon">'+ICONS[v.id]+'</div><span class="v-status '+v.sclass+'">'+v.status+'</span></div>'+
+    '<div class="v-name">'+v.name+' <span class="v-by">BY PSYCHE</span></div>'+
+    '<p class="v-mission">'+v.mission+'</p>'+
+    '<div class="v-why">'+v.purpose+'</div>'+
+    '<span class="v-open">Open venture file →</span>';
+  card.addEventListener('click', function(){ openModal(v); });
+  grid.appendChild(card);
+});
+
+/* ============ Modal ============ */
+var modal = document.getElementById('modal');
+function openModal(v){
+  document.getElementById('modalBody').innerHTML =
+    '<div class="m-head"><div class="v-icon">'+ICONS[v.id]+'</div><div><div class="v-name" style="margin:0;">'+v.name+'</div><span class="v-status '+v.sclass+'" style="margin-top:4px;display:inline-block;">'+v.status+'</span></div></div>'+
+    '<p class="mut" style="font-size:15px;">'+v.mission+'</p>'+
+    '<div class="m-why"><div class="k" style="font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--teal);font-weight:700;font-style:normal;margin-bottom:6px;">The why</div>'+v.purpose+'</div>'+
+    '<div class="m-rows">'+
+      '<div class="m-row"><div class="k">Civilization pillar contributed</div><p>'+v.primitive+' — the capability this venture gives every other PSYCHE company.</p></div>'+
+      '<div class="m-row"><div class="k">The un-invented industry</div><p>'+v.problem+'</p></div>'+
+      '<div class="m-row"><div class="k">Why now</div><p>'+v.why+'</p></div>'+
+      '<div class="m-row"><div class="k">The business</div><p>'+v.model+'</p></div>'+
+      '<div class="m-row"><div class="k">The flywheel</div><p>'+v.fly+'</p></div>'+
+    '</div>';
+  modal.classList.add('show');
+  document.body.style.overflow='hidden';
+}
+function closeModal(){ modal.classList.remove('show'); document.body.style.overflow=''; }
+document.getElementById('modalBg').addEventListener('click', closeModal);
+document.getElementById('modalClose').addEventListener('click', closeModal);
+document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeModal(); });
+
+/* ============ Hero chapter ticker ============ */
+var tIdx = 0, tTimer = null;
+var tInner = document.getElementById('tInner');
+var tDots = document.getElementById('tDots');
+VENTURES.forEach(function(_, i){
+  var d = document.createElement('span');
+  d.className = 't-dot' + (i===0 ? ' on' : '');
+  tDots.appendChild(d);
+});
+function setChapter(i){
+  tIdx = i;
+  document.getElementById('tCh').textContent = 'CHAPTER ' + String(i+1).padStart(2,'0') + ' / 10';
+  document.getElementById('tName').textContent = VENTURES[i].name;
+  document.getElementById('tLine').textContent = VENTURES[i].line;
+  Array.prototype.forEach.call(tDots.children, function(d, j){ d.classList.toggle('on', j===i); });
+}
+function cycleTicker(){
+  tTimer = setInterval(function(){
+    tInner.classList.add('out');
+    setTimeout(function(){ setChapter((tIdx+1) % VENTURES.length); tInner.classList.remove('out'); }, 400);
+  }, 3600);
+}
+setChapter(0); cycleTicker();
+function openTicker(){ openModal(VENTURES[tIdx]); }
+document.getElementById('heroTicker').addEventListener('click', openTicker);
+document.getElementById('heroTicker').addEventListener('keydown', function(e){ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); openTicker(); } });
+
+/* ============ Floating pillar chips ============ */
+(function(){
+  var layer = document.getElementById('chipsLayer');
+  var positions = [[62,12],[80,20],[68,32],[86,42],[58,50],[78,58],[64,70],[84,80],[72,88],[52,26]];
+  var colors = {TRUTH:'#5eead4',LABOR:'#a78bfa',MONEY:'#fbbf24',SKILL:'#fb7185',AGENCY:'#7dd3fc',HEALTH:'#5eead4',ENERGY:'#a78bfa',FORESIGHT:'#fbbf24',MEMORY:'#fb7185',SHELTER:'#7dd3fc'};
+  var ventureByPillar = {TRUTH:'verity',LABOR:'roster',MONEY:'covenant',SKILL:'proven',AGENCY:'oga',HEALTH:'remedy',ENERGY:'current',FORESIGHT:'mirror',MEMORY:'everlight',SHELTER:'atlas'};
+  var wraps = [];
+  PILLARS.forEach(function(p, i){
+    var w = document.createElement('span');
+    w.className = 'chip-wrap';
+    w.style.left = positions[i][0] + '%';
+    w.style.top = positions[i][1] + '%';
+    var c = document.createElement('span');
+    c.className = 'chip';
+    c.style.setProperty('--chip', colors[p[0]]);
+    c.style.animationDuration = (6 + (i % 5) * 1.3) + 's';
+    c.style.animationDelay = (-i * 0.8) + 's';
+    c.textContent = p[0];
+    c.title = VENTURES.filter(function(v){ return v.id === ventureByPillar[p[0]]; })[0].name;
+    c.addEventListener('click', function(){
+      var target = VENTURES.filter(function(v){ return v.id === ventureByPillar[p[0]]; })[0];
+      if(target) openModal(target);
+    });
+    w.appendChild(c);
+    layer.appendChild(w);
+    wraps.push(w);
+  });
+  var hero = document.querySelector('.hero');
+  var glow = document.getElementById('heroGlow');
+  hero.addEventListener('mousemove', function(e){
+    var r = hero.getBoundingClientRect();
+    var x = (e.clientX - r.left) / r.width - 0.5;
+    var y = (e.clientY - r.top) / r.height - 0.5;
+    glow.style.left = (e.clientX - r.left) + 'px';
+    glow.style.top = (e.clientY - r.top) + 'px';
+    wraps.forEach(function(w, i){
+      var depth = 12 + (i % 4) * 9;
+      w.style.transform = 'translate(' + (-x * depth) + 'px,' + (-y * depth) + 'px)';
+    });
+  });
+})();
+
+/* ============ Header ============ */
+var header=document.getElementById('header');
+window.addEventListener('scroll', function(){ header.classList.toggle('scrolled', window.scrollY>40); }, {passive:true});
+
+/* ============ Reveal ============ */
+var els=document.querySelectorAll('.reveal');
+if('IntersectionObserver' in window){
+  var ro=new IntersectionObserver(function(en){ en.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('visible'); ro.unobserve(e.target);} }); },{threshold:.12, rootMargin:'0px 0px -40px 0px'});
+  els.forEach(function(el){ ro.observe(el); });
+} else els.forEach(function(el){ el.classList.add('visible'); });
+
+/* ============ Hero counters ============ */
+function count(el, target, dur){
+  var start=null;
+  function step(ts){ if(!start)start=ts; var p=Math.min((ts-start)/dur,1); var e=1-Math.pow(1-p,3); el.textContent=Math.round(target*e); if(p<1)requestAnimationFrame(step); }
+  requestAnimationFrame(step);
+}
+setTimeout(function(){ count(document.getElementById('hv1'),10,1400); count(document.getElementById('hv2'),8,1400); count(document.getElementById('hv3'),10,1400); },600);
+
+/* ============ Starfield ============ */
+var cv=document.getElementById('stars'), ctx=cv.getContext('2d'), W,H,pts=[],mouse={x:.5,y:.5};
+var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+function size(){ W=cv.width=innerWidth; H=cv.height=innerHeight; }
+function init(){ pts=[]; var n=Math.min(150, Math.floor(W*H/12000)); for(var i=0;i<n;i++) pts.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.6+.4,vx:(Math.random()-.5)*.18,vy:(Math.random()-.5)*.18,hue:Math.random()<.5?'94,234,212':'167,139,250'}); }
+addEventListener('resize', function(){ size(); init(); });
+addEventListener('mousemove', function(e){ mouse.x=e.clientX/W; mouse.y=e.clientY/H; }, {passive:true});
+function frame(){
+  ctx.clearRect(0,0,W,H);
+  var ox=(mouse.x-.5)*14, oy=(mouse.y-.5)*14;
+  for(var i=0;i<pts.length;i++){
+    var p=pts[i];
+    if(!reduced){ p.x+=p.vx; p.y+=p.vy; }
+    if(p.x<0)p.x=W; if(p.x>W)p.x=0; if(p.y<0)p.y=H; if(p.y>H)p.y=0;
+    ctx.beginPath(); ctx.arc(p.x+ox*p.r*.4, p.y+oy*p.r*.4, p.r, 0, 6.283);
+    ctx.fillStyle='rgba('+p.hue+',.5)'; ctx.fill();
+  }
+  for(var a=0;a<pts.length;a++)for(var b=a+1;b<pts.length;b++){
+    var dx=pts[a].x-pts[b].x, dy=pts[a].y-pts[b].y, d=dx*dx+dy*dy;
+    if(d<11000){ ctx.beginPath(); ctx.moveTo(pts[a].x+ox,pts[a].y+oy); ctx.lineTo(pts[b].x+ox,pts[b].y+oy); ctx.strokeStyle='rgba(140,160,220,'+(0.09*(1-d/11000))+')'; ctx.lineWidth=.6; ctx.stroke(); }
+  }
+  requestAnimationFrame(frame);
+}
+size(); init(); frame();
+})();
+</script>
+</body>
+</html>
