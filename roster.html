@@ -2,7 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<meta name="theme-color" content="#05060f"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <title>Roster — HR for AI agents · by PSYCHE Group</title>
 <meta name="description" content="Roster by PSYCHE Group: hire, manage, approve and pay your AI agent workforce. Team seats, marketplace, audit log, shared snapshots."/>
 <style>
@@ -366,6 +370,61 @@ input[type=range][disabled]{cursor:not-allowed;opacity:.5;}
 /* command deck layout */
 .deck-grid{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;}
 @media(max-width:940px){.deck-grid{grid-template-columns:1fr;}}
+
+/* ============ PHONE ARMOR (≤640px) ============ */
+@media(max-width:640px){
+  #topbar{padding:10px 12px;gap:8px;}
+  .brand{font-size:12px;letter-spacing:.2em;gap:8px;}
+  .brand .ph{display:none;}
+  #wsFlag{font-size:9px;padding:6px 10px;max-width:150px;overflow:hidden;text-overflow:ellipsis;}
+  #hireBtn{padding:9px 13px;font-size:12.5px;}
+  #userChip{padding:4px 8px 4px 4px;}
+  #userChip .un{display:none;}
+  #app{padding:18px 12px 120px;gap:16px;}
+  .card{padding:16px;}
+  .kpis{gap:10px;}
+  .kpi{padding:13px 14px;}
+  .kpi .kv{font-size:20px;}
+  #spark{height:110px;}
+  .ringwrap{flex-direction:column;align-items:flex-start;gap:12px;}
+  #agentGrid,#mkGrid{grid-template-columns:1fr;}
+  .acard,.mk{padding:15px;}
+  .navitem{min-height:44px;}
+  .v-head{margin-bottom:14px;}
+  .v-head .btn{width:100%;justify-content:center;}
+  .v-head>div[style]{width:100%;}
+  .v-head>div[style] .btn{flex:1;}
+  .apc{padding:14px;gap:12px;}
+  .apc .apx{width:100%;}
+  .apc .apx .btn{flex:1;justify-content:center;min-height:42px;}
+  .field .txt,#memName,#memMail,#memEmail{max-width:none;width:100%;flex:1 1 100%;}
+  #memRole{flex:1 1 100%!important;max-width:none!important;}
+  .field .btn{width:100%;justify-content:center;min-height:44px;}
+  .memrow .mx{width:100%;margin-left:0;}
+  .memrow .mx select{flex:1;}
+  .memrow .rmv{width:38px;height:38px;}
+  .memchip .ur{display:none;}
+  #drawer{width:100vw;border-left:none;}
+  .modal{padding:20px 16px;border-radius:16px;}
+  .m-foot .btn{min-height:44px;flex:1;justify-content:center;}
+  #badge .b-grid{grid-template-columns:1fr 1fr;}
+  .stamp{right:14px;bottom:auto;top:56px;}
+  .rep-kpis{grid-template-columns:1fr 1fr;}
+  .chk-items{grid-template-columns:1fr 1fr;}
+  #pal{padding:8vh 10px 10px;}
+  #toasts{bottom:calc(16px + env(safe-area-inset-bottom,0px));}
+  #app{padding-bottom:calc(120px + env(safe-area-inset-bottom,0px));}
+  .ob2{grid-template-columns:1fr;}
+  .btn,.navitem,.cchip,.dice,.m-x,.switch{min-height:38px;}
+  #snapBanner{flex-wrap:wrap;font-size:12px;}
+  #snapBanner .btn{margin-left:0;}
+}
+@media(max-width:380px){
+  .kpis{grid-template-columns:1fr 1fr;}
+  .kpi .kv{font-size:18px;}
+  .rep-kpis{grid-template-columns:1fr;}
+  .chk-items{grid-template-columns:1fr;}
+}
 </style>
 </head>
 <body>
@@ -522,6 +581,11 @@ input[type=range][disabled]{cursor:not-allowed;opacity:.5;}
         <div id="prefList"></div>
       </div>
 
+      <div class="card set-sec"><h4>Integrations</h4>
+        <p class="mut" style="font-size:12.5px;line-height:1.7;margin:-6px 0 10px;">Plug Roster into the tools your company already runs on. Connected apps receive approvals, alerts and reports automatically.</p>
+        <div id="intgList"></div>
+      </div>
+
       <div class="card set-sec"><h4>API access</h4>
         <p class="mut" style="font-size:12.5px;line-height:1.7;margin-bottom:12px;">Everything in Roster will be queryable over REST in the hosted version — agents, approvals, payroll, audit. Your prototype key (read-only, local):</p>
         <div class="apikey" id="apiKey">…</div>
@@ -650,6 +714,14 @@ var PREFS=[
  {k:'tick',t:'Live simulation',d:'Prototype heartbeat — agents complete tasks in real time.'},
  {k:'toasts',t:'Toast notifications',d:'Confirmations for every action.'}
 ];
+var INTEGRATIONS=[
+ {k:'slack',n:'Slack',ico:'💬',d:'Approvals & cap-audit alerts land in your #agents channel.'},
+ {k:'teams',n:'Microsoft Teams',ico:'🟦',d:'Adaptive cards for every approval — sign from the thread.'},
+ {k:'gws',n:'Google Workspace',ico:'🔵',d:'Auto-provision agent service accounts & Drive write scopes.'},
+ {k:'notion',n:'Notion',ico:'📝',d:'Weekly workforce reports synced to your company wiki.'},
+ {k:'jira',n:'Jira',ico:'🎯',d:'High-power approvals auto-create tickets for IT review.'},
+ {k:'okta',n:'Okta / SSO',ico:'🔐',d:'SCIM seat sync & SAML — live in the hosted version.'}
+];
 var PERM={hire:1,approve:1,budget:1,pause:1,retire:1,settings:1,market:1,members:'owner',danger:'owner'};
 
 /* ---------- state ---------- */
@@ -685,6 +757,7 @@ function demoState(){
    series:[96,118,104,132,150,141,168,190,176,205,214,228,246,261],
    policies:{capAudit:true,needApproval:true,autoOffboard:false,publicFeed:true},
    prefs:{tick:true,toasts:true},
+   integrations:{slack:true,teams:false,gws:false,notion:true,jira:false,okta:false},
    flags:{firstHire:false,firstAction:false,reviewed:false},
    counters:{apr:207,agt:10}, apikey:'rsk_live_'+Math.random().toString(36).slice(2,10)+'_'+Math.random().toString(36).slice(2,6)
   };
@@ -697,12 +770,14 @@ function blankState(name,ind,currency){
    series:[0,0,0,0,0,0,0,0,0,0,0,0,0,0],
    policies:{capAudit:true,needApproval:true,autoOffboard:false,publicFeed:true},
    prefs:{tick:true,toasts:true},
+   integrations:{slack:true,teams:false,gws:false,notion:true,jira:false,okta:false},
    flags:{firstHire:false,firstAction:false,reviewed:false},
    counters:{apr:201,agt:1}, apikey:'rsk_live_'+Math.random().toString(36).slice(2,10)+'_'+Math.random().toString(36).slice(2,6)};
 }
 function inflate(s){
   s.v=3; s.members=s.members||[]; s.audit=s.audit||[];
   s.prefs=Object.assign({tick:true,toasts:true},s.prefs||{});
+  s.integrations=Object.assign({slack:true,teams:false,gws:false,notion:true,jira:false,okta:false},s.integrations||{});
   s.policies=Object.assign({capAudit:true,needApproval:true,autoOffboard:false,publicFeed:true},s.policies||{});
   s.flags=Object.assign({firstHire:s.agents&&s.agents.length>0,firstAction:false,reviewed:false},s.flags||{});
   s.counters=Object.assign({apr:220,agt:(s.agents?s.agents.length:0)+1},s.counters||{});
@@ -832,6 +907,24 @@ function renderPrefs(){
    });
   });
 }
+function renderIntegrations(){
+  var dis=can('settings')?'':' disabled';
+  $('#intgList').innerHTML=INTEGRATIONS.map(function(g){
+   var on=state.integrations[g.k];
+   return '<div class="pol"><div style="min-width:0;display:flex;gap:11px;align-items:flex-start;"><span style="font-size:18px;margin-top:1px;">'+g.ico+'</span><div><div class="pt">'+g.n+(on?' <span style="color:var(--teal);font-family:var(--mono);font-size:9px;letter-spacing:.14em;">● CONNECTED</span>':'')+'</div><div class="pd">'+g.d+'</div></div></div>'+
+    '<label class="switch"><input type="checkbox" data-intg="'+g.k+'"'+(on?' checked':'')+dis+'/><span class="tr"></span></label></div>';
+  }).join('');
+  $$('#intgList input').forEach(function(inp){
+   inp.addEventListener('change',function(){
+    if(!need('settings')){inp.checked=!inp.checked;return;}
+    var g=INTEGRATIONS.filter(function(x){return x.k===inp.dataset.intg;})[0];
+    state.integrations[g.k]=inp.checked;save();
+    logAudit(inp.checked?'🔌':'⛔','Integration '+g.n+' '+(inp.checked?'connected':'disconnected')+'.');
+    toast(inp.checked?g.n+' connected — events now route there 🔌':g.n+' disconnected',inp.checked?'ok':'warn');
+    renderIntegrations();
+   });
+  });
+}
 function agentAccent(a){return ACCENTS[(a.name.charCodeAt(0))%ACCENTS.length];}
 var agentQ='';
 function renderAgents(){
@@ -899,6 +992,8 @@ function decideApproval(id,ok){
    pushFeed('✖','Request <b>'+ap.id+'</b> denied.');
   }
   logAudit(ok?'✍️':'🚫','Approval '+ap.id+' ('+esc(ap.title)+') <b>'+(ok?'approved':'denied')+'</b>.');
+  if(state.integrations&&state.integrations.slack)pushFeed('💬','Posted '+ap.id+' decision to <b>Slack · #agents</b>.');
+  if(state.integrations&&state.integrations.jira&&(ap.kind==='scope'||ap.kind==='resume'))pushFeed('🎯','Jira ticket auto-filed for IT review: '+ap.id+'.');
   state.approvals=state.approvals.filter(function(a){return a.status==='pending';});
   state.flags.firstAction=true;save();
   toast(ap.title+(ok?' — approved':' — denied'), ok?'ok':'warn', ok?'✍️':'🚫');
@@ -1018,7 +1113,7 @@ function renderSettings(){
   });});
   $('#wsMeta').textContent='Created '+new Date(state.ws.created).toLocaleDateString()+' · '+(state.ws.demo?'Demo workspace with sample data':'Your private workspace')+(viewerMode?' · shared snapshot':' · stored only in this browser');
   $('#apiKey').textContent=state.apikey+(viewerMode?'':'');
-  renderPrefs();renderMembers();
+  renderPrefs();renderMembers();renderIntegrations();
 }
 function saveWorkspaceName(){
   if(!need('settings'))return;
