@@ -4,7 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Roster — HR for AI agents · by PSYCHE Group</title>
-<meta name="description" content="Roster by PSYCHE Group: hire, manage, approve and pay your AI agent workforce. Phase 1 prototype."/>
+<meta name="description" content="Roster by PSYCHE Group: hire, manage, approve and pay your AI agent workforce. Team seats, marketplace, audit log, shared snapshots."/>
 <style>
 :root{
   --bg:#05060f; --bg2:#0a0d1e; --card:rgba(255,255,255,.04); --card2:rgba(255,255,255,.065);
@@ -31,9 +31,14 @@ input,select{font-family:inherit;}
 @keyframes rise{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:none;}}
 @keyframes popin{from{opacity:0;transform:scale(.92);}to{opacity:1;transform:none;}}
 @keyframes draw{to{stroke-dashoffset:0;}}
+@keyframes fadein{from{opacity:0;}}
+@media (prefers-reduced-motion: reduce){*{animation-duration:.001s!important;transition-duration:.001s!important;}}
+
+/* role visibility */
+.ro-viewer .only-admin,.ro-manager .only-owner,.ro-viewer .only-owner{display:none!important;}
 
 /* ============ TOPBAR ============ */
-#topbar{position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:14px;padding:12px 22px;background:rgba(5,6,15,.82);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);}
+#topbar{position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:12px;padding:12px 22px;background:rgba(5,6,15,.82);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);}
 .brand{display:flex;align-items:center;gap:11px;font-weight:800;letter-spacing:.26em;font-size:14px;}
 .brand svg{flex:none;}
 .brand .ph{font-family:var(--mono);font-size:9px;letter-spacing:.22em;color:var(--violet);border:1px solid rgba(167,139,250,.4);border-radius:99px;padding:3px 9px;text-transform:uppercase;}
@@ -42,9 +47,9 @@ input,select{font-family:inherit;}
 #wsFlag.live{color:var(--teal);border-color:rgba(94,234,212,.45);background:rgba(94,234,212,.07);}
 #wsFlag::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor;animation:pulse 2s infinite;}
 .top-mid{flex:1;display:flex;justify-content:center;}
-#search{width:min(340px,34vw);background:var(--card);border:1px solid var(--border);border-radius:99px;padding:9px 16px 9px 36px;color:var(--text);font-size:13px;transition:.25s;background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="%238e97b8" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>');background-repeat:no-repeat;background-position:13px 50%;}
-#search:focus{border-color:rgba(167,139,250,.55);outline:none;width:min(420px,44vw);}
-#search::placeholder{color:var(--faint);}
+#palOpen{width:min(340px,34vw);background:var(--card);border:1px solid var(--border);border-radius:99px;padding:9px 16px;color:var(--faint);font-size:13px;transition:.25s;text-align:left;display:flex;align-items:center;gap:9px;}
+#palOpen:hover{border-color:rgba(167,139,250,.55);color:var(--muted);}
+#palOpen kbd{margin-left:auto;}
 .btn{display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:13.5px;padding:10px 18px;border-radius:11px;transition:.22s;border:1px solid transparent;white-space:nowrap;}
 .btn-p{background:linear-gradient(95deg,var(--violet),#8b5cf6);color:#0d0a26;box-shadow:0 6px 22px rgba(139,92,246,.34);}
 .btn-p:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(139,92,246,.45);}
@@ -54,14 +59,27 @@ input,select{font-family:inherit;}
 .btn-danger:hover{background:rgba(251,113,133,.16);}
 .btn-sm{padding:7px 13px;font-size:12px;border-radius:9px;}
 .btn[disabled]{opacity:.4;pointer-events:none;}
+#userChip{display:flex;align-items:center;gap:9px;padding:5px 12px 5px 5px;border:1px solid var(--border);border-radius:99px;background:var(--card);cursor:pointer;transition:.2s;}
+#userChip:hover{border-color:var(--violet);}
+#userChip .uav{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--violet),var(--teal));color:#0b0a1f;font-weight:800;font-size:11px;display:flex;align-items:center;justify-content:center;}
+#userChip .un{font-size:12px;font-weight:700;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+#userChip .ur{font-family:var(--mono);font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);border:1px solid rgba(94,234,212,.4);border-radius:99px;padding:2px 7px;}
+#userChip .ur.manager{color:var(--violet);border-color:rgba(167,139,250,.4);}
+#userChip .ur.viewer{color:var(--muted);border-color:var(--border2);}
 .mship{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--muted);text-transform:uppercase;transition:.2s;display:flex;align-items:center;gap:6px;}
 .mship:hover{color:var(--teal);}
+kbd{font-family:var(--mono);font-size:10px;background:var(--card2);border:1px solid var(--border2);border-bottom-width:2px;border-radius:5px;padding:1px 6px;color:var(--text);}
 @media(max-width:900px){
   #topbar{flex-wrap:wrap;gap:10px;}
   .top-mid{order:5;flex-basis:100%;}
-  #search{width:100%;}#search:focus{width:100%;}
+  #palOpen{width:100%;}
   .mship span{display:none;}
 }
+
+/* shared snapshot banner */
+#snapBanner{position:sticky;top:0;z-index:110;background:linear-gradient(90deg,rgba(94,234,212,.14),rgba(167,139,250,.14));border-bottom:1px solid rgba(94,234,212,.35);padding:10px 22px;display:flex;align-items:center;gap:12px;font-size:13px;}
+#snapBanner b{color:var(--teal);}
+#snapBanner .btn{margin-left:auto;}
 
 /* ============ APP LAYOUT ============ */
 #app{position:relative;z-index:1;display:grid;grid-template-columns:212px 1fr;gap:26px;max-width:1280px;margin:0 auto;padding:26px 22px 90px;}
@@ -72,16 +90,14 @@ input,select{font-family:inherit;}
 .navitem.on::before{content:"";position:absolute;left:-1px;top:20%;bottom:20%;width:3px;border-radius:3px;background:linear-gradient(180deg,var(--violet),var(--teal));}
 .navitem .ico{font-size:16px;width:22px;text-align:center;}
 .badge{margin-left:auto;background:var(--rose);color:#17060a;font-family:var(--mono);font-size:10.5px;font-weight:700;min-width:20px;height:20px;border-radius:99px;display:flex;align-items:center;justify-content:center;padding:0 6px;}
-.side-foot{margin-top:22px;padding:14px;border:1px dashed var(--border);border-radius:13px;font-size:11.5px;color:var(--faint);line-height:1.7;}
+.side-foot{margin-top:22px;padding:14px;border:1px dashed var(--border);border-radius:13px;font-size:11.5px;color:var(--faint);line-height:1.8;}
 .side-foot b{color:var(--muted);display:block;margin-bottom:4px;font-size:12px;}
-kbd{font-family:var(--mono);font-size:10px;background:var(--card2);border:1px solid var(--border2);border-bottom-width:2px;border-radius:5px;padding:1px 6px;color:var(--text);}
 @media(max-width:900px){
   #app{grid-template-columns:1fr;gap:18px;}
   #sidebar{position:sticky;top:56px;flex-direction:row;overflow-x:auto;padding:4px;background:rgba(10,13,30,.85);backdrop-filter:blur(12px);border:1px solid var(--border);border-radius:13px;z-index:90;scrollbar-width:none;}
   #sidebar::-webkit-scrollbar{display:none;}
   .navitem{white-space:nowrap;padding:9px 13px;}
   .navitem.on::before{top:auto;left:14px;right:14px;bottom:0;width:auto;height:2.5px;}
-  .navitem .lb{display:inline;}
   .side-foot{display:none;}
 }
 
@@ -94,9 +110,6 @@ kbd{font-family:var(--mono);font-size:10px;background:var(--card2);border:1px so
 .card{border:1px solid var(--border);background:var(--card);border-radius:var(--r);padding:20px;}
 .card h4{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:9px;}
 .card h4::before{content:"";width:8px;height:8px;border-radius:2.5px;background:var(--violet);flex:none;}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
-.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
-@media(max-width:820px){.grid2,.grid3{grid-template-columns:1fr;}}
 
 /* KPIs */
 .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px;}
@@ -118,7 +131,7 @@ kbd{font-family:var(--mono);font-size:10px;background:var(--card2);border:1px so
 .chk-txt b{display:block;font-size:12.5px;color:var(--text);}
 .chk.done .chk-txt b{color:var(--muted);text-decoration:line-through;text-decoration-color:rgba(94,234,212,.6);}
 
-/* Feed */
+/* Feed / audit */
 .feed{list-style:none;display:flex;flex-direction:column;max-height:340px;overflow-y:auto;scrollbar-width:none;}
 .feed::-webkit-scrollbar{display:none;}
 .feed li{display:flex;gap:12px;padding:10px 2px;border-bottom:1px solid var(--border);font-size:13px;align-items:baseline;animation:rise .3s;}
@@ -127,18 +140,21 @@ kbd{font-family:var(--mono);font-size:10px;background:var(--card2);border:1px so
 .feed .ft{margin-left:auto;font-family:var(--mono);font-size:9.5px;color:var(--faint);white-space:nowrap;letter-spacing:.08em;}
 .feed .fx{color:#c3cbe4;line-height:1.55;}
 .feed .fx b{color:var(--text);}
+.actor{font-family:var(--mono);font-size:9px;letter-spacing:.1em;color:var(--sky);border:1px solid rgba(125,211,252,.35);border-radius:99px;padding:2px 8px;text-transform:uppercase;flex:none;}
 
-/* Policies */
+/* Policies / prefs */
 .pol{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 2px;border-bottom:1px solid var(--border);}
 .pol:last-child{border-bottom:none;}
 .pol .pt{font-size:13.5px;font-weight:600;}
 .pol .pd{font-size:12px;color:var(--muted);margin-top:2px;line-height:1.5;}
 .switch{position:relative;width:42px;height:24px;flex:none;}
 .switch input{position:absolute;opacity:0;inset:0;cursor:pointer;z-index:2;margin:0;}
+.switch input[disabled]{cursor:not-allowed;}
 .switch .tr{position:absolute;inset:0;border-radius:99px;background:var(--card2);border:1px solid var(--border2);transition:.25s;}
 .switch .tr::after{content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:var(--muted);transition:.25s;}
 .switch input:checked+.tr{background:rgba(167,139,250,.35);border-color:var(--violet);}
 .switch input:checked+.tr::after{left:20px;background:var(--violet);box-shadow:0 0 12px rgba(167,139,250,.7);}
+.switch input[disabled]+.tr{opacity:.5;}
 
 /* Charts */
 .chart-row{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;margin-bottom:18px;}
@@ -148,9 +164,6 @@ kbd{font-family:var(--mono);font-size:10px;background:var(--card2);border:1px so
 #capRing{transform:rotate(-90deg);}
 #capRing .trk{stroke:rgba(255,255,255,.08);}
 #capRing .val{stroke:url(#rg);stroke-linecap:round;transition:stroke-dashoffset .8s cubic-bezier(.22,.61,.36,1);}
-.ringtxt{text-align:center;width:76px;margin-left:-128px;font-variant-numeric:tabular-nums;}
-.ringtxt b{font-size:21px;font-weight:800;}
-.ringtxt span{display:block;font-family:var(--mono);font-size:8.5px;letter-spacing:.18em;color:var(--muted);text-transform:uppercase;margin-top:2px;}
 .ringlegend{font-size:12.5px;color:var(--muted);line-height:2;}
 .ringlegend i{display:inline-block;width:9px;height:9px;border-radius:2.5px;margin-right:8px;}
 
@@ -185,6 +198,20 @@ kbd{font-family:var(--mono);font-size:10px;background:var(--card2);border:1px so
 .empty b{display:block;color:var(--text);font-size:16px;margin-bottom:6px;}
 .empty p{font-size:13px;max-width:400px;margin:0 auto 18px;line-height:1.65;}
 
+/* Marketplace */
+#mkGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(264px,1fr));gap:14px;}
+.mk{border:1px solid var(--border);background:var(--card);border-radius:var(--r);padding:18px;display:flex;flex-direction:column;gap:9px;transition:.25s;position:relative;overflow:hidden;}
+.mk:hover{transform:translateY(-3px);border-color:rgba(94,234,212,.45);}
+.mk .mk-top{display:flex;align-items:center;gap:11px;}
+.mk .mk-ico{font-size:26px;}
+.mk b{font-size:15px;}
+.mk .mk-dept{font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--teal);display:block;margin-top:2px;}
+.mk .mk-blurb{font-size:12.5px;color:var(--muted);line-height:1.6;flex:1;}
+.mk .mk-inst{font-family:var(--mono);font-size:9.5px;color:var(--faint);letter-spacing:.1em;}
+.mk .mk-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:4px;}
+.mk .mk-bud{font-size:12px;color:var(--teal);font-variant-numeric:tabular-nums;}
+.packlab{font-family:var(--mono);font-size:8.5px;letter-spacing:.22em;color:var(--amber);text-transform:uppercase;}
+
 /* Approvals */
 .apc{border:1px solid var(--border);border-left:3px solid var(--amber);background:var(--card);border-radius:var(--r);padding:16px 18px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-bottom:12px;animation:rise .35s;}
 .apc .apic{font-size:20px;}
@@ -192,8 +219,9 @@ kbd{font-family:var(--mono);font-size:10px;background:var(--card2);border:1px so
 .apc .apt{font-weight:700;font-size:14.5px;}
 .apc .apd{font-size:12.5px;color:var(--muted);margin-top:3px;line-height:1.55;}
 .apc .app{font-family:var(--mono);font-size:10px;color:var(--amber);letter-spacing:.14em;text-transform:uppercase;margin-bottom:4px;}
-.apc .apx{display:flex;gap:9px;}
+.apc .apx{display:flex;gap:9px;align-items:center;}
 .kind{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--border2);color:var(--muted);border-radius:99px;padding:3px 9px;margin-left:8px;}
+.locked{font-family:var(--mono);font-size:10px;color:var(--faint);letter-spacing:.1em;}
 
 /* Payroll */
 .pbar{margin-bottom:13px;}
@@ -210,19 +238,29 @@ kbd{font-family:var(--mono);font-size:10px;background:var(--card2);border:1px so
 .cchip:hover{color:var(--text);border-color:var(--violet);}
 .cchip.on{color:#0d0a26;background:linear-gradient(95deg,var(--violet),#8b5cf6);border-color:transparent;font-weight:700;}
 .field{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
-.txt{background:var(--card);border:1px solid var(--border);border-radius:11px;color:var(--text);font-size:14px;padding:11px 15px;min-width:220px;flex:1;max-width:340px;}
+.txt{background:var(--card);border:1px solid var(--border);border-radius:11px;color:var(--text);font-size:14px;padding:11px 15px;min-width:0;flex:1;max-width:340px;}
 .txt:focus{border-color:rgba(167,139,250,.6);outline:none;}
+.txt[readonly]{opacity:.6;}
 .datarow{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:13px 2px;border-bottom:1px solid var(--border);flex-wrap:wrap;}
 .datarow:last-child{border:none;}
 .datarow .dt{font-size:13.5px;font-weight:600;}
 .datarow .dd{font-size:12px;color:var(--muted);margin-top:2px;}
 .dangerzone{border-color:rgba(251,113,133,.35);}
 .dangerzone h4::before{background:var(--rose);}
+select.txt{max-width:180px;padding:9px 12px;appearance:none;cursor:pointer;background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="6" viewBox="0 0 10 6"><path d="m1 1 4 4 4-4" stroke="%238e97b8" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>');background-repeat:no-repeat;background-position:right 12px center;}
+.memrow{display:flex;align-items:center;gap:12px;padding:11px 2px;border-bottom:1px solid var(--border);flex-wrap:wrap;}
+.memrow:last-child{border:none;}
+.memrow .mav{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--violet),var(--teal));color:#0b0a1f;font-weight:800;font-size:12px;display:flex;align-items:center;justify-content:center;flex:none;}
+.memrow .mn{font-weight:700;font-size:13.5px;}
+.memrow .me{font-size:11.5px;color:var(--muted);}
+.memrow .mx{margin-left:auto;display:flex;gap:8px;align-items:center;}
+.memrow .rmv{width:28px;height:28px;border-radius:8px;border:1px solid var(--border);color:var(--faint);transition:.2s;}
+.memrow .rmv:hover{color:var(--rose);border-color:var(--rose);}
+.apikey{font-family:var(--mono);font-size:12px;background:var(--card2);border:1px dashed var(--border2);border-radius:10px;padding:10px 14px;color:var(--teal);letter-spacing:.03em;word-break:break-all;}
 
-/* ============ MODALS ============ */
+/* ============ MODALS / OVERLAYS ============ */
 .overlay{position:fixed;inset:0;z-index:300;background:rgba(3,4,10,.72);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:20px;}
 .overlay.show{display:flex;animation:fadein .25s;}
-@keyframes fadein{from{opacity:0;}}
 .modal{width:min(560px,100%);max-height:88vh;overflow-y:auto;background:var(--bg2);border:1px solid var(--border2);border-radius:20px;padding:28px;box-shadow:0 30px 80px rgba(0,0,0,.6);animation:popin .3s cubic-bezier(.22,.61,.36,1);scrollbar-width:none;}
 .modal::-webkit-scrollbar{display:none;}
 .m-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:6px;}
@@ -246,8 +284,9 @@ kbd{font-family:var(--mono);font-size:10px;background:var(--card2);border:1px so
 .scp input{accent-color:var(--violet);width:15px;height:15px;}
 .scp.on{border-color:rgba(167,139,250,.6);color:var(--text);background:rgba(167,139,250,.08);}
 input[type=range]{width:100%;accent-color:var(--violet);height:26px;cursor:pointer;}
+input[type=range][disabled]{cursor:not-allowed;opacity:.5;}
 .rangeout{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--teal);text-align:center;margin:4px 0 10px;letter-spacing:.02em;}
-.m-foot{display:flex;gap:10px;justify-content:flex-end;margin-top:24px;}
+.m-foot{display:flex;gap:10px;justify-content:flex-end;margin-top:24px;flex-wrap:wrap;}
 .callrow{display:flex;gap:10px;align-items:stretch;}
 .callrow .txt{max-width:none;}
 .dice{width:48px;border:1px solid var(--border2);border-radius:11px;font-size:18px;transition:.2s;flex:none;background:var(--card);}
@@ -256,7 +295,7 @@ input[type=range]{width:100%;accent-color:var(--violet);height:26px;cursor:point
 /* Badge issue card */
 #badge{animation:popin .55s cubic-bezier(.22,.61,.36,1);border:1px solid rgba(167,139,250,.5);border-radius:18px;padding:24px;background:linear-gradient(140deg,rgba(167,139,250,.12),rgba(94,234,212,.07)),var(--bg2);position:relative;overflow:hidden;margin-bottom:18px;}
 #badge::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(115deg,transparent 0 14px,rgba(255,255,255,.02) 14px 15px);pointer-events:none;}
-#badge .b-top{display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);font-size:9.5px;letter-spacing:.22em;color:var(--teal);text-transform:uppercase;margin-bottom:18px;}
+#badge .b-top{display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);font-size:9.5px;letter-spacing:.22em;color:var(--teal);text-transform:uppercase;margin-bottom:18px;flex-wrap:wrap;gap:6px;}
 #badge .b-name{font-size:26px;font-weight:800;letter-spacing:-.01em;}
 #badge .b-role{color:var(--muted);font-size:13px;margin-top:3px;}
 #badge .b-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:18px;font-family:var(--mono);font-size:11px;}
@@ -281,9 +320,8 @@ input[type=range]{width:100%;accent-color:var(--violet);height:26px;cursor:point
 .toast.warn{border-color:rgba(251,191,36,.5);}
 .toast.err{border-color:rgba(251,113,133,.5);}
 
-/* Onboarding */
-#onb{z-index:600;}
-#onb.modal-esque .modal{width:min(620px,100%);}
+/* Onboarding / gate */
+#onb,#gate{z-index:600;}
 .ob-hero{display:flex;align-items:center;gap:14px;margin-bottom:8px;}
 .ob-hero .psi{width:42px;height:42px;flex:none;}
 .ob-hero .psi path{stroke-dasharray:160;stroke-dashoffset:160;animation:draw 1.8s .2s ease forwards;}
@@ -297,6 +335,33 @@ input[type=range]{width:100%;accent-color:var(--violet);height:26px;cursor:point
 .ob-opt.reco{border-color:rgba(251,191,36,.5);position:relative;}
 .ob-opt.reco::after{content:"RECOMMENDED";position:absolute;top:-9px;right:14px;font-family:var(--mono);font-size:8px;letter-spacing:.18em;color:#17060a;background:var(--amber);border-radius:99px;padding:3px 9px;}
 .ob-foot{margin-top:8px;font-size:11.5px;color:var(--faint);text-align:center;}
+.ob2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+@media(max-width:520px){.ob2{grid-template-columns:1fr;}}
+.memchips{display:flex;flex-direction:column;gap:8px;margin-top:4px;}
+.memchip{display:flex;align-items:center;gap:12px;border:1px solid var(--border2);border-radius:13px;padding:12px 15px;text-align:left;transition:.2s;width:100%;}
+.memchip:hover{border-color:var(--violet);background:rgba(167,139,250,.07);}
+
+/* command palette */
+#pal{z-index:650;align-items:flex-start;padding-top:12vh;}
+#palBox{width:min(560px,100%);background:var(--bg2);border:1px solid var(--border2);border-radius:18px;box-shadow:0 30px 90px rgba(0,0,0,.65);overflow:hidden;animation:popin .22s cubic-bezier(.22,.61,.36,1);}
+#palIn{width:100%;background:none;border:none;border-bottom:1px solid var(--border);padding:17px 20px;font-size:15.5px;color:var(--text);}
+#palIn:focus{outline:none;}
+#palList{max-height:46vh;overflow-y:auto;scrollbar-width:none;padding:8px;}
+#palList::-webkit-scrollbar{display:none;}
+.palitem{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:11px 13px;border-radius:11px;font-size:13.5px;color:var(--muted);}
+.palitem .pi{width:22px;text-align:center;flex:none;}
+.palitem .ps{margin-left:auto;font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);}
+.palitem.sel{background:rgba(167,139,250,.13);color:var(--text);}
+.palfoot{display:flex;gap:16px;padding:10px 16px;border-top:1px solid var(--border);font-family:var(--mono);font-size:9.5px;color:var(--faint);letter-spacing:.1em;}
+
+/* help */
+.helprow{display:flex;align-items:center;justify-content:space-between;padding:10px 2px;border-bottom:1px solid var(--border);font-size:13.5px;}
+.helprow:last-child{border:none;}
+
+/* report */
+.rep-kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0;}
+.rep-kpis .kpi{padding:13px 15px;}
+.rep-kpis .kv{font-size:20px;}
 
 /* command deck layout */
 .deck-grid{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;}
@@ -306,6 +371,8 @@ input[type=range]{width:100%;accent-color:var(--violet);height:26px;cursor:point
 <body>
 <a href="#main" class="skip">Skip to content</a>
 
+<div id="snapBanner" hidden>🔗 Viewing a <b>shared snapshot</b> — read-only.<span id="snapName" class="mut"></span><button class="btn btn-g btn-sm" onclick="exitSnapshot()">Open your own Roster →</button></div>
+
 <header id="topbar">
   <a class="brand" href="index.html" title="PSYCHE Group — mothership">
     <svg width="26" height="26" viewBox="0 0 60 60" fill="none"><path d="M12 6c0 24 4 38 22 38 8 0 14-5 14-13 0-9-7-14-15-14-6 0-10 3-12 7" stroke="url(#pg)" stroke-width="5" stroke-linecap="round"/><defs><linearGradient id="pg" x1="0" y1="0" x2="60" y2="60"><stop stop-color="#a78bfa"/><stop offset="1" stop-color="#5eead4"/></linearGradient></defs></svg>
@@ -313,8 +380,9 @@ input[type=range]{width:100%;accent-color:var(--violet);height:26px;cursor:point
     <span class="ph">Phase 1 · Prototype</span>
   </a>
   <span id="wsFlag" class="demo" role="status">…</span>
-  <div class="top-mid"><input id="search" type="search" placeholder="Search agents, roles, scopes…" aria-label="Search agents" autocomplete="off"/></div>
-  <button class="btn btn-p" id="hireBtn">＋ Hire agent</button>
+  <div class="top-mid"><button id="palOpen" aria-label="Open command palette">🔎 <span>Search or command…</span><kbd>⌘K</kbd></button></div>
+  <button class="btn btn-p only-admin" id="hireBtn">＋ Hire agent</button>
+  <div id="userChip" title="Account" hidden></div>
   <a class="mship" href="index.html" title="Back to PSYCHE Group">Ψ <span>Mothership</span></a>
 </header>
 
@@ -322,14 +390,17 @@ input[type=range]{width:100%;accent-color:var(--violet);height:26px;cursor:point
   <nav id="sidebar" aria-label="Roster sections">
     <button class="navitem on" data-view="command"><span class="ico">📊</span><span class="lb">Command Deck</span></button>
     <button class="navitem" data-view="agents"><span class="ico">🤖</span><span class="lb">Agents</span></button>
+    <button class="navitem" data-view="market"><span class="ico">🛒</span><span class="lb">Marketplace</span></button>
     <button class="navitem" data-view="approvals"><span class="ico">✋</span><span class="lb">Approvals</span><span class="badge" id="apBadge" hidden>0</span></button>
     <button class="navitem" data-view="payroll"><span class="ico">💰</span><span class="lb">Payroll</span></button>
+    <button class="navitem" data-view="audit"><span class="ico">🧾</span><span class="lb">Audit Log</span></button>
     <button class="navitem" data-view="settings"><span class="ico">⚙️</span><span class="lb">Settings</span></button>
     <div class="side-foot">
       <b>Shortcuts</b>
-      <kbd>N</kbd> new hire &nbsp; <kbd>Esc</kbd> close<br><br>
+      <kbd>⌘K</kbd> palette · <kbd>N</kbd> hire<br>
+      <kbd>?</kbd> help · <kbd>Esc</kbd> close<br><br>
       Roster · Phase 1 prototype.<br>
-      All data stays in your browser.
+      Data lives in this browser.
     </div>
   </nav>
 
@@ -345,13 +416,13 @@ input[type=range]{width:100%;accent-color:var(--violet);height:26px;cursor:point
         <div class="card"><h4>Tasks / day — 14 days</h4><svg id="spark" viewBox="0 0 420 130" preserveAspectRatio="none" role="img" aria-label="Tasks per day sparkline"></svg></div>
         <div class="card"><h4>Org capacity</h4>
           <div class="ringwrap">
-            <div style="position:relative;"> 
+            <div style="position:relative;">
               <svg id="capRing" width="120" height="120" viewBox="0 0 120 120" role="img" aria-label="Org capacity ring">
                 <defs><linearGradient id="rg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#a78bfa"/><stop offset="100%" stop-color="#5eead4"/></linearGradient></defs>
                 <circle class="trk" cx="60" cy="60" r="50" fill="none" stroke-width="11"/>
                 <circle class="val" cx="60" cy="60" r="50" fill="none" stroke-width="11" id="capVal"/>
               </svg>
-              <div class="ringtxt" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0;"><b id="capPct">0%</b><span>budget used</span></div>
+              <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;"><b id="capPct" style="font-size:21px;font-weight:800;">0%</b><span style="font-family:var(--mono);font-size:8.5px;letter-spacing:.18em;color:var(--muted);text-transform:uppercase;margin-top:2px;">budget used</span></div>
             </div>
             <div class="ringlegend" id="capLegend"></div>
           </div>
@@ -367,9 +438,17 @@ input[type=range]{width:100%;accent-color:var(--violet);height:26px;cursor:point
     <section class="view" id="v-agents">
       <div class="v-head">
         <div><h2>Agents</h2><p class="sub">Every agent on your payroll — scopes, spend, status. Click one to manage.</p></div>
-        <button class="btn btn-p btn-sm" onclick="openHire()">＋ Hire agent <span class="mut" style="font-weight:400;">(N)</span></button>
+        <button class="btn btn-p btn-sm only-admin" onclick="openHire()">＋ Hire agent <span class="mut" style="font-weight:400;">(N)</span></button>
       </div>
       <div id="agentGrid"></div>
+    </section>
+
+    <!-- MARKETPLACE -->
+    <section class="view" id="v-market">
+      <div class="v-head">
+        <div><h2>Marketplace</h2><p class="sub">Pre-trained agent packs from PSYCHE Labs &amp; the community. Deploy to your roster in one click.</p></div>
+      </div>
+      <div id="mkGrid"></div>
     </section>
 
     <!-- APPROVALS -->
@@ -384,10 +463,25 @@ input[type=range]{width:100%;accent-color:var(--violet);height:26px;cursor:point
     <section class="view" id="v-payroll">
       <div class="v-head">
         <div><h2>Payroll</h2><p class="sub">What your workforce costs — per department, per task, per month.</p></div>
-        <button class="btn btn-g btn-sm" onclick="exportPayrollCSV()">⬇ Export CSV</button>
+        <div style="display:flex;gap:9px;flex-wrap:wrap;">
+          <button class="btn btn-g btn-sm" onclick="exportPayrollCSV()">⬇ Export CSV</button>
+          <button class="btn btn-p btn-sm" onclick="openReport()">📈 Weekly report</button>
+        </div>
       </div>
       <div class="kpis" id="payKpis"></div>
       <div class="card"><h4>Spend by department</h4><div id="payBars"></div></div>
+    </section>
+
+    <!-- AUDIT -->
+    <section class="view" id="v-audit">
+      <div class="v-head">
+        <div><h2>Audit Log</h2><p class="sub">Every action, signed and timestamped. Your compliance trail — SOC&nbsp;2-ready thinking from day one.</p></div>
+        <div style="display:flex;gap:9px;flex-wrap:wrap;">
+          <button class="btn btn-g btn-sm" onclick="exportAuditCSV()">⬇ Export CSV</button>
+          <button class="btn btn-danger btn-sm only-owner" id="auditClearBtn" onclick="clearAudit()">Clear log</button>
+        </div>
+      </div>
+      <div class="card"><h4>Event stream</h4><ul class="feed" id="auditList" style="max-height:520px;"></ul></div>
     </section>
 
     <!-- SETTINGS -->
@@ -396,11 +490,26 @@ input[type=range]{width:100%;accent-color:var(--violet);height:26px;cursor:point
         <div><h2>Settings</h2><p class="sub">Make Roster yours. Everything saves instantly to this browser.</p></div>
       </div>
 
+      <div class="card set-sec only-owner"><h4>Team &amp; seats</h4>
+        <div id="memberList"></div>
+        <div class="field" style="margin-top:16px;">
+          <input class="txt" id="memName" maxlength="24" placeholder="Name"/>
+          <input class="txt" id="memEmail" maxlength="48" type="email" placeholder="work@email.com"/>
+          <select class="txt" id="memRole" style="flex:0 0 130px;min-width:130px;">
+            <option value="manager">Manager</option>
+            <option value="viewer">Viewer</option>
+            <option value="owner">Owner</option>
+          </select>
+          <button class="btn btn-p btn-sm" onclick="inviteMember()">Invite</button>
+        </div>
+        <p class="mut" style="font-size:12px;margin-top:12px;">Prototype seats — sign-in swaps roles on this device. Hosted version sends real invites.</p>
+      </div>
+
       <div class="card set-sec"><h4>Workspace profile</h4>
         <label class="lbl" for="setName">Workspace name</label>
         <div class="field" style="margin-bottom:20px;">
           <input class="txt" id="setName" maxlength="40"/>
-          <button class="btn btn-p btn-sm" onclick="saveWorkspaceName()">Save name</button>
+          <button class="btn btn-p btn-sm only-admin" onclick="saveWorkspaceName()">Save name</button>
         </div>
         <label class="lbl">Industry</label>
         <div class="chiplist" id="setIndustries" style="margin-bottom:20px;"></div>
@@ -413,16 +522,26 @@ input[type=range]{width:100%;accent-color:var(--violet);height:26px;cursor:point
         <div id="prefList"></div>
       </div>
 
+      <div class="card set-sec"><h4>API access</h4>
+        <p class="mut" style="font-size:12.5px;line-height:1.7;margin-bottom:12px;">Everything in Roster will be queryable over REST in the hosted version — agents, approvals, payroll, audit. Your prototype key (read-only, local):</p>
+        <div class="apikey" id="apiKey">…</div>
+        <div class="field" style="margin-top:12px;">
+          <button class="btn btn-g btn-sm" onclick="copyApiKey()">Copy key</button>
+          <span class="mut" style="font-size:11.5px;">GET /v1/agents · GET /v1/approvals · POST /v1/approvals/:id/decide · GET /v1/audit — documented at launch.</span>
+        </div>
+      </div>
+
       <div class="card set-sec"><h4>Data &amp; sharing</h4>
-        <div class="datarow"><div><div class="dt">⬇ Download workspace backup</div><div class="dd">Full JSON snapshot — agents, approvals, feed, policies.</div></div><button class="btn btn-g btn-sm" onclick="exportJSON()">Export JSON</button></div>
+        <div class="datarow"><div><div class="dt">🔗 Copy shared snapshot link</div><div class="dd">A real link — anyone can open a read-only, frozen view of this exact workspace.</div></div><button class="btn btn-g btn-sm" onclick="copyLink()">Copy link</button></div>
+        <div class="datarow"><div><div class="dt">⬇ Download workspace backup</div><div class="dd">Full JSON snapshot — agents, approvals, feed, policies, members, audit.</div></div><button class="btn btn-g btn-sm" onclick="exportJSON()">Export JSON</button></div>
         <div class="datarow"><div><div class="dt">📄 Export agents CSV</div><div class="dd">Spreadsheet-ready roster export.</div></div><button class="btn btn-g btn-sm" onclick="exportAgentsCSV()">Agents CSV</button></div>
         <div class="datarow"><div><div class="dt">📄 Export payroll CSV</div><div class="dd">Department spend for finance.</div></div><button class="btn btn-g btn-sm" onclick="exportPayrollCSV()">Payroll CSV</button></div>
-        <div class="datarow"><div><div class="dt">🔗 Copy view-only link</div><div class="dd">Prototype link — real seat invites ship in the hosted version.</div></div><button class="btn btn-g btn-sm" onclick="copyLink()">Copy link</button></div>
-        <div class="datarow"><div><div class="dt">⬆ Import backup</div><div class="dd">Restore a JSON snapshot (replaces current data).</div></div><button class="btn btn-g btn-sm" onclick="document.getElementById('impFile').click()">Import JSON</button></div>
+        <div class="datarow"><div><div class="dt">📄 Export audit CSV</div><div class="dd">The signed event trail — compliance-grade.</div></div><button class="btn btn-g btn-sm" onclick="exportAuditCSV()">Audit CSV</button></div>
+        <div class="datarow only-admin"><div><div class="dt">⬆ Import backup</div><div class="dd">Restore a JSON snapshot (replaces current data).</div></div><button class="btn btn-g btn-sm" onclick="importPick()">Import JSON</button></div>
         <input type="file" id="impFile" accept=".json,application/json" hidden/>
       </div>
 
-      <div class="card set-sec dangerzone"><h4>Danger zone</h4>
+      <div class="card set-sec dangerzone only-owner"><h4>Danger zone</h4>
         <div class="datarow"><div><div class="dt">🗑 Reset workspace</div><div class="dd">Erases everything in this browser and restarts onboarding.</div></div><button class="btn btn-danger btn-sm" id="resetBtn" onclick="resetWorkspace()">Reset workspace</button></div>
       </div>
     </section>
@@ -434,9 +553,40 @@ input[type=range]{width:100%;accent-color:var(--violet);height:26px;cursor:point
   <div class="modal" id="hireModal"></div>
 </div>
 
+<!-- REPORT MODAL -->
+<div class="overlay" id="repOv" role="dialog" aria-modal="true" aria-label="Weekly report">
+  <div class="modal" id="repModal"></div>
+</div>
+
+<!-- HELP MODAL -->
+<div class="overlay" id="helpOv" role="dialog" aria-modal="true" aria-label="Keyboard shortcuts">
+  <div class="modal">
+    <div class="m-head"><div><h3>Keyboard shortcuts</h3><p class="mut" style="font-size:13px;margin-top:4px;">Move like a pro.</p></div><button class="m-x" onclick="closeHelp()" aria-label="Close">✕</button></div>
+    <div class="helprow"><span>Command palette</span><span><kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>K</kbd> &nbsp;or&nbsp; <kbd>/</kbd></span></div>
+    <div class="helprow"><span>Hire a new agent</span><kbd>N</kbd></div>
+    <div class="helprow"><span>Close modal / drawer</span><kbd>Esc</kbd></div>
+    <div class="helprow"><span>This help</span><kbd>?</kbd></div>
+    <div class="helprow"><span>Palette: navigate / run</span><span><kbd>↑</kbd> <kbd>↓</kbd> <kbd>Enter</kbd></span></div>
+  </div>
+</div>
+
 <!-- ONBOARDING -->
-<div class="overlay modal-esque" id="onb" role="dialog" aria-modal="true" aria-label="Welcome to Roster">
-  <div class="modal" id="onbModal"></div>
+<div class="overlay" id="onb" role="dialog" aria-modal="true" aria-label="Welcome to Roster">
+  <div class="modal" id="onbModal" style="width:min(620px,100%);"></div>
+</div>
+
+<!-- SIGN-IN GATE -->
+<div class="overlay" id="gate" role="dialog" aria-modal="true" aria-label="Sign in to Roster">
+  <div class="modal" id="gateModal"></div>
+</div>
+
+<!-- COMMAND PALETTE -->
+<div class="overlay" id="pal" role="dialog" aria-modal="true" aria-label="Command palette">
+  <div id="palBox">
+    <input id="palIn" placeholder="Type a command or search…" autocomplete="off"/>
+    <div id="palList" role="listbox"></div>
+    <div class="palfoot"><span>↑↓ navigate</span><span>↵ run</span><span>esc close</span><span style="margin-left:auto;">ROSTER ⌘K</span></div>
+  </div>
 </div>
 
 <aside id="drawer" aria-label="Agent details"></aside>
@@ -445,16 +595,20 @@ input[type=range]{width:100%;accent-color:var(--violet);height:26px;cursor:point
 <script>
 (function(){
 'use strict';
-/* roster.v2 — standardization pass: onboarding · currencies · settings · portability · a11y */
-var KEY='roster.v2';
+/* ================= roster.v3 — the complete edition =================
+   accounts+seats · role permissions · marketplace · audit log ·
+   shared snapshots (real links) · command palette · reports · api key */
+var KEY='roster.v2', SKEY='roster.session';
 
 /* ---------- helpers ---------- */
 function $(s,r){return (r||document).querySelector(s);}
 function $$(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function stripTags(s){return String(s||'').replace(/<[^>]+>/g,'');}
 function fmt(n){return Math.round(n).toLocaleString('en-US');}
 function ago(ts){var s=Math.max(1,Math.round((Date.now()-ts)/1000));if(s<60)return s+'s ago';var m=Math.round(s/60);if(m<60)return m+'m ago';var h=Math.round(m/60);if(h<24)return h+'h ago';return Math.round(h/24)+'d ago';}
-/* currency engine */
+function b64e(s){try{return btoa(unescape(encodeURIComponent(s)));}catch(e){return null;}}
+function b64d(s){try{return decodeURIComponent(escape(atob(s)));}catch(e){return null;}}
 var CUR={USD:{s:'$',r:1,n:'US Dollar'},NGN:{s:'₦',r:1520,n:'Nigerian Naira'},EUR:{s:'€',r:0.92,n:'Euro'},GBP:{s:'£',r:0.79,n:'British Pound'}};
 function cur(){return CUR[state.ws.currency]||CUR.USD;}
 function money(v){var c=cur(),x=v*c.r;
@@ -462,18 +616,29 @@ function money(v){var c=cur(),x=v*c.r;
   if(x>=1e5)return c.s+Math.round(x/1000)+'k';
   if(x>=1e3)return c.s+x.toLocaleString('en-US',{maximumFractionDigits:0});
   return c.s+(x%1?x.toFixed(1):Math.round(x));}
+function initials(n){return n.split(/\s+/).map(function(w){return w[0];}).join('').slice(0,2).toUpperCase();}
 
 /* ---------- catalogs ---------- */
 var INDUSTRIES=['Retail & E-commerce','Fintech & Banking','Healthcare','Logistics','Media & Creators','Education','Energy','Other'];
 var ROLES=[
- {name:'Support Agent',ico:'🎧',desc:'Answers tickets & chat in your brand voice.',dept:'Support',scopes:['inbox.read','inbox.reply','crm.write'],budget:160},
- {name:'Finance Ops',ico:'📒',desc:'Reconciles books, chases invoices, flags anomalies.',dept:'Finance',scopes:['ledger.read','ledger.write','docs.write'],budget:220},
- {name:'Research Scout',ico:'🔭',desc:'Monitors markets, competitors and leads 24/7.',dept:'Growth',scopes:['web.search','docs.write'],budget:140},
- {name:'Content Writer',ico:'✍️',desc:'Ships posts, briefs and product copy on schedule.',dept:'Marketing',scopes:['docs.write','web.search'],budget:180},
- {name:'Security Sentinel',ico:'🛡️',desc:'Watches logs, rate-limits and suspicious flows.',dept:'Security',scopes:['logs.read','alerts.raise'],budget:260}
+ {ico:'🎧',name:'Support Agent',role:'Support Agent',dept:'Support',desc:'Answers tickets & chat in your brand voice.',scopes:['inbox.read','inbox.reply','crm.write'],budget:160},
+ {ico:'📒',name:'Finance Ops',role:'Finance Ops',dept:'Finance',desc:'Reconciles books, chases invoices, flags anomalies.',scopes:['ledger.read','ledger.write','docs.write'],budget:220},
+ {ico:'🔭',name:'Research Scout',role:'Research Scout',dept:'Growth',desc:'Monitors markets, competitors and leads 24/7.',scopes:['web.search','docs.write'],budget:140},
+ {ico:'✍️',name:'Content Writer',role:'Content Writer',dept:'Marketing',desc:'Ships posts, briefs and product copy on schedule.',scopes:['docs.write','web.search'],budget:180},
+ {ico:'🛡️',name:'Security Sentinel',role:'Security Sentinel',dept:'Security',desc:'Watches logs, rate-limits and suspicious flows.',scopes:['logs.read','alerts.raise'],budget:260}
+];
+var MARKET=[
+ {ico:'⚖️',role:'Contract Reviewer',dept:'Legal',budget:300,scopes:['docs.write','web.search','ledger.read'],blurb:'Reviews NDAs & vendor contracts, flags the clause that ruins your quarter.',installs:'12.4k',pack:'PSYCHE Labs'},
+ {ico:'🧑‍🏫',role:'HR Onboarding',dept:'People',budget:120,scopes:['inbox.read','docs.write','calendar.write'],blurb:'Walks every new hire through week one — dates, docs, intros, done.',installs:'9.1k',pack:'PSYCHE Labs'},
+ {ico:'🔮',role:'Data Analyst',dept:'Ops',budget:240,scopes:['web.search','docs.write','logs.read'],blurb:'Turns raw exports into Monday-morning answers, charts included.',installs:'7.7k',pack:'PSYCHE Labs'},
+ {ico:'📈',role:'Sales Outreach',dept:'Sales',budget:280,scopes:['crm.write','inbox.reply','web.search'],blurb:'Researches every lead, drafts the follow-up, books the demo.',installs:'8.8k',pack:'Community'},
+ {ico:'🛟',role:'Retention Analyst',dept:'Support',budget:220,scopes:['crm.write','inbox.read','alerts.raise'],blurb:'Spots at-risk customers 30 days out and drafts the save-offer.',installs:'4.2k',pack:'Community'},
+ {ico:'🌍',role:'Translator',dept:'Comms',budget:150,scopes:['docs.write','inbox.reply'],blurb:'24 languages, your tone, instantly — support without borders.',installs:'6.3k',pack:'PSYCHE Labs'},
+ {ico:'🧪',role:'QA Tester',dept:'Engineering',budget:200,scopes:['logs.read','alerts.raise','web.search'],blurb:'Clicks every path before your users find the bug. Writes it up, too.',installs:'5.9k',pack:'Community'},
+ {ico:'📣',role:'PR Monitor',dept:'Marketing',budget:160,scopes:['web.search','alerts.raise','docs.write'],blurb:'Watches every mention and drafts the response before it trends.',installs:'3.5k',pack:'Community'}
 ];
 var SCOPECAT=['inbox.read','inbox.reply','crm.write','ledger.read','ledger.write','web.search','docs.write','calendar.write','payments.send','deploy.push','logs.read','alerts.raise'];
-var CALLSIGNS=['Nova','Flux','Vera','Orbit','Jax','Kira','Tala','Mira','Zephyr','Lyra','Odin','Sable','Piper','Rune','Exact','Halo','Cinder','Dash'];
+var CALLSIGNS=['Nova','Flux','Vera','Orbit','Jax','Kira','Tala','Mira','Zephyr','Lyra','Odin','Sable','Piper','Rune','Halo','Cinder','Dash','Ade','Chidi','Zain'];
 var ACCENTS=['#a78bfa','#5eead4','#7dd3fc','#fb7185','#fbbf24','#34d399','#f472b6'];
 var POLICIES=[
  {k:'capAudit',t:'Cap-audit alerts',d:'Flag any agent that crosses 80% of its monthly budget.'},
@@ -485,24 +650,24 @@ var PREFS=[
  {k:'tick',t:'Live simulation',d:'Prototype heartbeat — agents complete tasks in real time.'},
  {k:'toasts',t:'Toast notifications',d:'Confirmations for every action.'}
 ];
+var PERM={hire:1,approve:1,budget:1,pause:1,retire:1,settings:1,market:1,members:'owner',danger:'owner'};
 
-/* ---------- seed / state ---------- */
+/* ---------- state ---------- */
 function mkAgent(o){return Object.assign({id:'',name:'',role:'',dept:'',status:'active',budget:200,spent:0,scopes:[],offScopes:[],grade:'A',tasks:0,since:Date.now()},o);}
 function demoState(){
   var t=Date.now(),D=864e5;
-  var agents=[
-   mkAgent({id:'ag1',name:'Aria',role:'Support Agent',dept:'Support',budget:160,spent:96.2,scopes:['inbox.read','inbox.reply','crm.write'],offScopes:['payments.send'],grade:'A+',tasks:1247,since:t-42*D}),
-   mkAgent({id:'ag2',name:'Ledger',role:'Finance Ops',dept:'Finance',budget:220,spent:171.4,scopes:['ledger.read','ledger.write'],offScopes:['deploy.push'],grade:'A',tasks:812,since:t-38*D}),
-   mkAgent({id:'ag3',name:'Scout',role:'Research Scout',dept:'Growth',budget:140,spent:62.9,scopes:['web.search','docs.write'],offScopes:['crm.write'],grade:'A',tasks:1503,since:t-35*D}),
-   mkAgent({id:'ag4',name:'Quill',role:'Content Writer',dept:'Marketing',budget:200,spent:188.7,scopes:['docs.write','web.search'],offScopes:['deploy.push','payments.send'],grade:'B',tasks:640,since:t-30*D}),
-   mkAgent({id:'ag5',name:'Sentinel',role:'Security Sentinel',dept:'Security',budget:260,spent:143.1,scopes:['logs.read','alerts.raise'],offScopes:['payments.send'],grade:'A+',tasks:2910,since:t-27*D}),
-   mkAgent({id:'ag6',name:'Patch',role:'Support Agent',dept:'Support',status:'paused',budget:150,spent:44.5,scopes:['inbox.read'],offScopes:['inbox.reply','crm.write'],grade:'B',tasks:315,since:t-21*D}),
-   mkAgent({id:'ag7',name:'Amber',role:'Research Scout',dept:'Growth',budget:140,spent:118.3,scopes:['web.search'],offScopes:['docs.write'],grade:'A',tasks:977,since:t-15*D}),
-   mkAgent({id:'ag8',name:'Echo',role:'Content Writer',dept:'Marketing',budget:180,spent:52.6,scopes:['docs.write'],offScopes:['web.search'],grade:'B',tasks:428,since:t-9*D})
-  ];
   return {
-   v:2, ws:{name:'Northwind Retail',industry:'Retail & E-commerce',currency:'USD',demo:true,created:t},
-   agents:agents,
+   v:3, ws:{name:'Northwind Retail',industry:'Retail & E-commerce',currency:'USD',demo:true,created:t},
+   members:[], agents:[
+    mkAgent({id:'ag1',name:'Aria',role:'Support Agent',dept:'Support',budget:160,spent:96.2,scopes:['inbox.read','inbox.reply','crm.write'],offScopes:['payments.send'],grade:'A+',tasks:1247,since:t-42*D}),
+    mkAgent({id:'ag2',name:'Ledger',role:'Finance Ops',dept:'Finance',budget:220,spent:171.4,scopes:['ledger.read','ledger.write'],offScopes:['deploy.push'],grade:'A',tasks:812,since:t-38*D}),
+    mkAgent({id:'ag3',name:'Scout',role:'Research Scout',dept:'Growth',budget:140,spent:62.9,scopes:['web.search','docs.write'],offScopes:['crm.write'],grade:'A',tasks:1503,since:t-35*D}),
+    mkAgent({id:'ag4',name:'Quill',role:'Content Writer',dept:'Marketing',budget:200,spent:188.7,scopes:['docs.write','web.search'],offScopes:['deploy.push','payments.send'],grade:'B',tasks:640,since:t-30*D}),
+    mkAgent({id:'ag5',name:'Sentinel',role:'Security Sentinel',dept:'Security',budget:260,spent:143.1,scopes:['logs.read','alerts.raise'],offScopes:['payments.send'],grade:'A+',tasks:2910,since:t-27*D}),
+    mkAgent({id:'ag6',name:'Patch',role:'Support Agent',dept:'Support',status:'paused',budget:150,spent:44.5,scopes:['inbox.read'],offScopes:['inbox.reply','crm.write'],grade:'B',tasks:315,since:t-21*D}),
+    mkAgent({id:'ag7',name:'Amber',role:'Research Scout',dept:'Growth',budget:140,spent:118.3,scopes:['web.search'],offScopes:['docs.write'],grade:'A',tasks:977,since:t-15*D}),
+    mkAgent({id:'ag8',name:'Echo',role:'Content Writer',dept:'Marketing',budget:180,spent:52.6,scopes:['docs.write'],offScopes:['web.search'],grade:'B',tasks:428,since:t-9*D})
+   ],
    approvals:[
     {id:'APR-206',agent:'ag6',kind:'resume',title:'Resume Patch (Support Agent)',detail:'Requested by Support Lead · Patch has been paused for 6 days after the tone incident. Retraining complete.',impact:'Restores 960 ticket-mins/week of support capacity.',status:'pending',ts:t-3*3600e3},
     {id:'APR-205',agent:'ag4',kind:'budget',delta:60,title:'Raise Quill\u2019s budget → '+money(260),detail:'Quill is at 94% of budget with 9 days left. Marketing requested the raise to finish the launch campaign.',impact:'+'+money(60)+'/mo · prevents campaign stall.',status:'pending',ts:t-9*3600e3},
@@ -516,29 +681,71 @@ function demoState(){
     {ts:t-5.5*3600e3,ico:'🎧',txt:'<b>Aria</b> hit a 97.1% CSAT on 380 chats this week.'},
     {ts:t-26*3600e3,ico:'🛡️',txt:'Policy check: <b>Quill</b> crossed 80% of budget — cap-audit raised.'}
    ],
+   audit:[{ts:t-26*3600e3,ico:'🏁',txt:'Workspace <b>Northwind Retail</b> deployed from template.',by:'system'}],
    series:[96,118,104,132,150,141,168,190,176,205,214,228,246,261],
    policies:{capAudit:true,needApproval:true,autoOffboard:false,publicFeed:true},
    prefs:{tick:true,toasts:true},
    flags:{firstHire:false,firstAction:false,reviewed:false},
-   counters:{apr:207,agt:10}
+   counters:{apr:207,agt:10}, apikey:'rsk_live_'+Math.random().toString(36).slice(2,10)+'_'+Math.random().toString(36).slice(2,6)
   };
 }
 function blankState(name,ind,currency){
-  return {v:2,ws:{name:name,industry:ind,currency:currency,demo:false,created:Date.now()},
-   agents:[],approvals:[],feed:[{ts:Date.now(),ico:'🎉',txt:'Workspace <b>'+esc(name)+'</b> created. Hire your first agent to get moving.'}],
+  return {v:3,ws:{name:name,industry:ind,currency:currency,demo:false,created:Date.now()},
+   members:[],agents:[],approvals:[],
+   feed:[{ts:Date.now(),ico:'🎉',txt:'Workspace <b>'+esc(name)+'</b> created. Hire your first agent to get moving.'}],
+   audit:[{ts:Date.now(),ico:'🏁',txt:'Workspace <b>'+esc(name)+'</b> created.',by:'system'}],
    series:[0,0,0,0,0,0,0,0,0,0,0,0,0,0],
    policies:{capAudit:true,needApproval:true,autoOffboard:false,publicFeed:true},
    prefs:{tick:true,toasts:true},
    flags:{firstHire:false,firstAction:false,reviewed:false},
-   counters:{apr:201,agt:1}};
+   counters:{apr:201,agt:1}, apikey:'rsk_live_'+Math.random().toString(36).slice(2,10)+'_'+Math.random().toString(36).slice(2,6)};
 }
-var state=null;
-function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
-function load(){try{var s=JSON.parse(localStorage.getItem(KEY));if(s&&s.v===2)return s;}catch(e){}return null;}
+function inflate(s){
+  s.v=3; s.members=s.members||[]; s.audit=s.audit||[];
+  s.prefs=Object.assign({tick:true,toasts:true},s.prefs||{});
+  s.policies=Object.assign({capAudit:true,needApproval:true,autoOffboard:false,publicFeed:true},s.policies||{});
+  s.flags=Object.assign({firstHire:s.agents&&s.agents.length>0,firstAction:false,reviewed:false},s.flags||{});
+  s.counters=Object.assign({apr:220,agt:(s.agents?s.agents.length:0)+1},s.counters||{});
+  s.apikey=s.apikey||('rsk_live_'+Math.random().toString(36).slice(2,10));
+  s.series=s.series||[];while(s.series.length<14)s.series.unshift(0);
+  if(s.series.length>14)s.series=s.series.slice(-14);
+  return s;
+}
+var state=null, viewerMode=false, ME=null;
+function save(){ if(viewerMode)return; try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){} }
+function load(){ try{var s=JSON.parse(localStorage.getItem(KEY));if(s&&s.v>=2)return inflate(s);}catch(e){} return null; }
+function getSession(){ try{return JSON.parse(localStorage.getItem(SKEY));}catch(e){return null;} }
+function setSession(e){ try{localStorage.setItem(SKEY,JSON.stringify({email:e}));}catch(err){} }
+function findMember(email){var r=null;(state.members||[]).forEach(function(m){if(m.email.toLowerCase()===String(email).toLowerCase())r=m;});return r;}
+function can(k){
+  if(viewerMode)return false;
+  if(!ME)return false;
+  var p=PERM[k];if(!p)return true;
+  if(p==='owner')return ME.role==='owner';
+  return ME.role==='owner'||ME.role==='manager';
+}
+function need(k){
+  if(can(k))return true;
+  toast(viewerMode?'Shared snapshots are read-only 🔒':'Your role ('+(ME?ME.role:'signed out')+') can\u2019t do that — ask an owner','err','🔒');
+  return false;
+}
+function applyRole(){
+  document.body.className=viewerMode?'ro-viewer':(ME?('ro-'+ME.role):'');
+  var c=$('#userChip');
+  if(!ME){c.hidden=true;return;}
+  c.hidden=false;
+  c.innerHTML='<span class="uav">'+esc(initials(ME.name||ME.email))+'</span><span class="un" title="'+esc(ME.email)+'">'+esc(ME.name||ME.email)+'</span><span class="ur '+ME.role+'">'+ME.role+'</span>';
+}
+function logAudit(ico,txt){
+  if(!state)return;
+  state.audit.unshift({ts:Date.now(),ico:ico,txt:txt,by:viewerMode?'visitor':(ME?ME.name:'system')});
+  if(state.audit.length>300)state.audit.length=300;
+  if($('#v-audit').classList.contains('on'))renderAudit();
+  save();
+}
 
 /* ---------- toasts ---------- */
 function toast(msg,kind,ico){
-  if(!state||!state.prefs.toasts)return;
   var t=document.createElement('div');t.className='toast '+(kind||'ok');
   t.innerHTML='<span class="ti">'+(ico||(kind==='err'?'⚠️':'✅'))+'</span><span>'+msg+'</span>';
   $('#toasts').appendChild(t);
@@ -550,6 +757,7 @@ function show(v){
   $$('.view').forEach(function(s){s.classList.toggle('on',s.id==='v-'+v);});
   $$('#sidebar .navitem').forEach(function(b){b.classList.toggle('on',b.dataset.view===v);});
   if(v==='payroll')requestAnimationFrame(function(){requestAnimationFrame(fillPayBars);});
+  if(v==='audit')renderAudit();
 }
 $$('#sidebar .navitem').forEach(function(b){b.addEventListener('click',function(){show(b.dataset.view);});});
 
@@ -574,10 +782,11 @@ function renderChecklist(){
    {done:true,t:'Create workspace',s:state.ws.name},
    {done:state.agents.length>0,t:'Hire first agent',s:state.agents.length>0?state.agents.length+' on roster':'Tap “Hire agent”'},
    {done:state.flags.firstAction,t:'Decide an approval',s:state.flags.firstAction?'Signature recorded':'Approvals queue'},
-   {done:state.flags.reviewed,t:'Review policies',s:state.flags.reviewed?'Governance tuned':'Policy console below'}
+   {done:state.flags.reviewed,t:'Review policies',s:state.flags.reviewed?'Governance tuned':'Policy console below'},
+   {done:(state.members||[]).length>1||viewerMode,t:'Invite a teammate',s:(state.members||[]).length>1?state.members.length+' seats filled':'Settings → Team & seats'}
   ];
   var done=items.filter(function(i){return i.done;}).length;
-  if(done===4){$('#checklistMount').innerHTML='';return;}
+  if(done===items.length){$('#checklistMount').innerHTML='';return;}
   $('#checklistMount').innerHTML='<div class="card" id="checklist"><h4>Getting started · '+done+'/'+items.length+'</h4><div class="chk-items">'+
    items.map(function(i){return '<div class="chk'+(i.done?' done':'')+'"><span class="dot">✓</span><span class="chk-txt"><b>'+i.t+'</b><span class="mut" style="font-size:11px;">'+esc(i.s)+'</span></span></div>';}).join('')+'</div></div>';
 }
@@ -594,35 +803,44 @@ function pushFeed(ico,txt){
   renderFeed();save();
 }
 function renderPolicies(){
+  var dis=can('settings')?'':' disabled';
   $('#policyList').innerHTML=POLICIES.map(function(p){
    return '<div class="pol"><div style="min-width:0;"><div class="pt">'+p.t+'</div><div class="pd">'+p.d+'</div></div>'+
-    '<label class="switch"><input type="checkbox" data-pol="'+p.k+'"'+(state.policies[p.k]?' checked':'')+'/><span class="tr"></span></label></div>';
+    '<label class="switch"><input type="checkbox" data-pol="'+p.k+'"'+(state.policies[p.k]?' checked':'')+dis+'/><span class="tr"></span></label></div>';
   }).join('');
   $$('#policyList input').forEach(function(inp){
    inp.addEventListener('change',function(){
+    if(!need('settings')){inp.checked=!inp.checked;return;}
     state.policies[inp.dataset.pol]=inp.checked;state.flags.reviewed=true;save();
-    toast('Policy '+(inp.checked?'enabled':'disabled')+': '+POLICIES.filter(function(p){return p.k===inp.dataset.pol;})[0].t);
+    var t=POLICIES.filter(function(p){return p.k===inp.dataset.pol;})[0].t;
+    logAudit('⚖️','Policy <b>'+t+'</b> '+(inp.checked?'enabled':'disabled')+'.');
+    toast('Policy '+(inp.checked?'enabled':'disabled')+': '+t);
     renderChecklist();
    });
   });
 }
 function renderPrefs(){
+  var dis=can('settings')?'':' disabled';
   $('#prefList').innerHTML=PREFS.map(function(p){
    return '<div class="pol"><div style="min-width:0;"><div class="pt">'+p.t+'</div><div class="pd">'+p.d+'</div></div>'+
-    '<label class="switch"><input type="checkbox" data-pref="'+p.k+'"'+(state.prefs[p.k]?' checked':'')+'/><span class="tr"></span></label></div>';
+    '<label class="switch"><input type="checkbox" data-pref="'+p.k+'"'+(state.prefs[p.k]?' checked':'')+dis+'/><span class="tr"></span></label></div>';
   }).join('');
   $$('#prefList input').forEach(function(inp){
-   inp.addEventListener('change',function(){state.prefs[inp.dataset.pref]=inp.checked;save();toast('Preference saved');});
+   inp.addEventListener('change',function(){
+    if(!need('settings')){inp.checked=!inp.checked;return;}
+    state.prefs[inp.dataset.pref]=inp.checked;save();toast('Preference saved');
+   });
   });
 }
 function agentAccent(a){return ACCENTS[(a.name.charCodeAt(0))%ACCENTS.length];}
+var agentQ='';
 function renderAgents(){
-  var q=($('#search').value||'').toLowerCase();
+  var q=agentQ.toLowerCase();
   var list=state.agents.filter(function(a){return !q||(a.name+' '+a.role+' '+a.dept+' '+a.scopes.join(' ')).toLowerCase().indexOf(q)>=0;});
   if(!state.agents.length){
-   $('#agentGrid').innerHTML='<div class="empty" style="grid-column:1/-1;"><div class="ei">🤖</div><b>No agents yet</b><p>Your workforce is a blank page. Hire your first agent — it takes 20 seconds and it starts working instantly.</p><button class="btn btn-p" onclick="openHire()">＋ Hire your first agent</button></div>';return;
+   $('#agentGrid').innerHTML='<div class="empty" style="grid-column:1/-1;"><div class="ei">🤖</div><b>No agents yet</b><p>Your workforce is a blank page. Hire your first agent — or deploy one from the Marketplace in a single click.</p><div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;"><button class="btn btn-p only-admin" onclick="openHire()">＋ Hire your first agent</button><button class="btn btn-g" onclick="show(\'market\')">🛒 Browse Marketplace</button></div></div>';return;
   }
-  if(!list.length){$('#agentGrid').innerHTML='<div class="empty" style="grid-column:1/-1;"><div class="ei">🔍</div><b>No matches for “'+esc(q)+'”</b><p>Try a name, role, department or scope.</p></div>';return;}
+  if(!list.length){$('#agentGrid').innerHTML='<div class="empty" style="grid-column:1/-1;"><div class="ei">🔍</div><b>No matches for “'+esc(agentQ)+'”</b><p>Try a name, role, department or scope.</p></div>';return;}
   $('#agentGrid').innerHTML=list.map(function(a){
    var used=Math.min(100,a.budget?a.spent/a.budget*100:0);
    return '<button class="acard'+(a.status==='offboarded'?' off':'')+'" style="--ac:'+agentAccent(a)+'" onclick="openDrawer(\''+a.id+'\')" aria-label="Open '+esc(a.name)+'">'+
@@ -635,19 +853,40 @@ function renderAgents(){
    '</button>';
   }).join('');
 }
+function renderMarket(){
+  var dis=can('market')?'':' disabled';
+  $('#mkGrid').innerHTML=MARKET.map(function(m,i){
+   return '<div class="mk"><span class="packlab">'+m.pack+' pack</span>'+
+    '<div class="mk-top"><span class="mk-ico">'+m.ico+'</span><div><b>'+m.role+'</b><span class="mk-dept">'+m.dept+' dept</span></div></div>'+
+    '<div class="mk-blurb">'+m.blurb+'</div>'+
+    '<div class="ascope" style="margin:0;">'+m.scopes.slice(0,3).map(function(s){return '<span class="chip">'+s+'</span>';}).join('')+'</div>'+
+    '<div class="mk-foot"><span class="mk-bud">'+money(m.budget)+'/mo</span><span class="mk-inst">⬇ '+m.installs+' · ★ 4.9</span>'+
+    '<button class="btn btn-p btn-sm" data-mk="'+i+'"'+dis+'>Deploy →</button></div></div>';
+  }).join('');
+  $$('#mkGrid [data-mk]').forEach(function(b){
+   b.addEventListener('click',function(){
+    if(!need('market'))return;
+    deployPack(MARKET[+b.dataset.mk]);
+   });
+  });
+}
 function renderApprovals(){
   var pend=state.approvals.filter(function(a){return a.status==='pending';});
   if(!pend.length){
    $('#apList').innerHTML='<div class="empty"><div class="ei">✅</div><b>Queue is clear</b><p>Nothing waiting on your signature. When agents need power, budget or reactivation, it lands here first.</p></div>';return;
   }
+  var ok=can('approve');
   $('#apList').innerHTML=pend.map(function(ap){
    var ico=ap.kind==='resume'?'▶':ap.kind==='budget'?'💰':ap.kind==='hire'?'🆕':'🔑';
    return '<div class="apc"><span class="apic">'+ico+'</span><div class="apm"><div class="app">'+ap.id+' · '+ago(ap.ts)+'<span class="kind">'+ap.kind+'</span></div>'+
     '<div class="apt">'+esc(ap.title)+'</div><div class="apd">'+esc(ap.detail)+'</div><div class="apd" style="color:var(--teal);margin-top:5px;">▸ '+esc(ap.impact)+'</div></div>'+
-    '<div class="apx"><button class="btn btn-p btn-sm" onclick="decideApproval(\''+ap.id+'\',1)">Approve</button><button class="btn btn-danger btn-sm" onclick="decideApproval(\''+ap.id+'\',0)">Deny</button></div></div>';
+    '<div class="apx">'+(ok?
+     '<button class="btn btn-p btn-sm" onclick="decideApproval(\''+ap.id+'\',1)">Approve</button><button class="btn btn-danger btn-sm" onclick="decideApproval(\''+ap.id+'\',0)">Deny</button>'
+     :'<span class="locked">🔒 manager+ can sign</span>')+'</div></div>';
   }).join('');
 }
 function decideApproval(id,ok){
+  if(!need('approve'))return;
   var ap=null;state.approvals.forEach(function(a){if(a.id===id)ap=a;});
   if(!ap)return;
   ap.status=ok?'approved':'denied';
@@ -657,14 +896,16 @@ function decideApproval(id,ok){
    else if(ap.kind==='scope'){var s=byId(ap.agent);if(s){s.scopes.push(ap.scope);s.offScopes=s.offScopes.filter(function(x){return x!==ap.scope;});pushFeed('🔑','<b>'+s.name+'</b> granted <b>'+ap.scope+'</b>.');}}
    else if(ap.kind==='hire'){pushFeed('🆕','New headcount approved — provisioning <b>Kira</b>.');var nb=mkAgent({id:'ag'+state.counters.agt++,name:'Kira',role:'Finance Ops',dept:'Finance',budget:220,scopes:['ledger.read','ledger.write'],offScopes:['payments.send'],grade:'A'});state.agents.unshift(nb);}
   }else{
-   pushFeed('✖','Request <b>'+ap.id+'</b> denied by workspace owner.');
+   pushFeed('✖','Request <b>'+ap.id+'</b> denied.');
   }
+  logAudit(ok?'✍️':'🚫','Approval '+ap.id+' ('+esc(ap.title)+') <b>'+(ok?'approved':'denied')+'</b>.');
   state.approvals=state.approvals.filter(function(a){return a.status==='pending';});
   state.flags.firstAction=true;save();
   toast(ap.title+(ok?' — approved':' — denied'), ok?'ok':'warn', ok?'✍️':'🚫');
   renderAll();
 }
 function byId(id){var r=null;state.agents.forEach(function(a){if(a.id===id)r=a;});return r;}
+function byName(n){var r=false;state.agents.forEach(function(a){if(a.name.toLowerCase()===String(n).toLowerCase())r=true;});return r;}
 function renderPayroll(){
   var depts={};
   state.agents.forEach(function(a){var d=depts[a.dept]||(depts[a.dept]={budget:0,spent:0,tasks:0,n:0});d.budget+=a.budget;d.spent+=a.spent;d.tasks+=a.tasks;d.n++;});
@@ -678,7 +919,7 @@ function renderPayroll(){
   $('#payKpis').innerHTML=
    '<div class="kpi" style="--kc:var(--violet)"><div class="kv">'+money(tb)+'</div><div class="kk">Monthly payroll</div><div class="kd">across '+names.length+' departments</div></div>'+
    '<div class="kpi" style="--kc:var(--sky)"><div class="kv">'+money(ts2)+'</div><div class="kk">Spent so far</div><div class="kd">'+util+'% utilization</div></div>'+
-   '<div class="kpi" style="--kc:var(--teal)"><div class="kv">'+(tt?money(ts2/Math.max(1,tt)*1000).replace(cur().s,cur().s):'—')+'</div><div class="kk">Cost / 1k tasks</div><div class="kd"><b>'+fmt(tt)+'</b> tasks delivered</div></div>'+
+   '<div class="kpi" style="--kc:var(--teal)"><div class="kv">'+(tt?money(ts2/Math.max(1,tt)*1000):'—')+'</div><div class="kk">Cost / 1k tasks</div><div class="kd"><b>'+fmt(tt)+'</b> tasks delivered</div></div>'+
    '<div class="kpi" style="--kc:var(--amber)"><div class="kv">'+names.length+'</div><div class="kk">Departments</div><div class="kd">'+state.agents.length+' agents on roster</div></div>';
   var cols={Support:'#7dd3fc',Finance:'#5eead4',Growth:'#a78bfa',Marketing:'#f472b6',Security:'#fbbf24'};
   $('#payBars').innerHTML=names.map(function(n){
@@ -696,7 +937,7 @@ function renderCharts(){
   $('#spark').innerHTML='<defs><linearGradient id="sg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#a78bfa" stop-opacity=".35"/><stop offset="100%" stop-color="#a78bfa" stop-opacity="0"/></linearGradient><linearGradient id="sl" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#a78bfa"/><stop offset="100%" stop-color="#5eead4"/></linearGradient></defs>'+
    '<path d="'+area+'" fill="url(#sg)"/><path d="'+path+'" fill="none" stroke="url(#sl)" stroke-width="2.5" stroke-linecap="round"/>'+
    '<circle cx="'+pts[pts.length-1][0]+'" cy="'+pts[pts.length-1][1]+'" r="4" fill="#5eead4"><animate attributeName="r" values="4;6;4" dur="2s" repeatCount="indefinite"/></circle>'+
-   '<text x="'+(pad)+'" y="'+14+'" fill="#8e97b8" font-size="10" font-family="ui-monospace,monospace">'+(max?fmt(max)+'/day peak':'no activity yet')+'</text>';
+   '<text x="'+pad+'" y="14" fill="#8e97b8" font-size="10" font-family="ui-monospace,monospace">'+(max?fmt(max)+'/day peak':'no activity yet')+'</text>';
   var b=state.agents.reduce(function(x,a){return x+a.budget;},0),sp=state.agents.reduce(function(x,a){return x+a.spent;},0);
   var pct=b?Math.min(100,Math.round(sp/b*100)):0;
   var C=2*Math.PI*50;
@@ -704,35 +945,108 @@ function renderCharts(){
   $('#capPct').textContent=pct+'%';
   $('#capLegend').innerHTML='<div><i style="background:var(--violet);"></i>'+money(sp)+' spent</div><div><i style="background:rgba(255,255,255,.2);"></i>'+money(Math.max(0,b-sp))+' headroom</div><div class="mut" style="font-size:11px;margin-top:6px;">'+activeAgents().length+' agents drawing budget</div>';
 }
-function renderSettings(){
-  $('#setName').value=state.ws.name;
-  $('#setIndustries').innerHTML=INDUSTRIES.map(function(i){return '<button class="cchip'+(state.ws.industry===i?' on':'')+'" onclick="setIndustry(\''+esc(i)+'\')">'+esc(i)+'</button>';}).join('');
-  $('#setCurrencies').innerHTML=Object.keys(CUR).map(function(k){return '<button class="cchip'+(state.ws.currency===k?' on':'')+'" onclick="setCurrency(\''+k+'\')">'+CUR[k].s+' '+k+'</button>';}).join('');
-  $('#wsMeta').textContent='Created '+new Date(state.ws.created).toLocaleDateString()+' · '+(state.ws.demo?'Demo workspace with sample data':'Your private workspace')+' · stored only in this browser.';
-  renderPrefs();
+function renderAudit(){
+  var list=state.audit.slice(0,120);
+  $('#auditList').innerHTML=list.length?list.map(function(f){
+   return '<li><span class="fi">'+f.ico+'</span><span class="fx">'+f.txt+'</span><span class="actor">'+esc(f.by||'system')+'</span><span class="ft">'+ago(f.ts)+'</span></li>';
+  }).join(''):'<li><span class="fx mut">No events yet — everything your team does gets signed here.</span></li>';
 }
-function setIndustry(i){state.ws.industry=i;save();renderSettings();renderKpis();toast('Industry set: '+i);}
-function setCurrency(k){state.ws.currency=k;save();renderAll();toast('Currency: '+CUR[k].n+' ('+CUR[k].s+')');}
+function renderMembers(){
+  var ms=state.members||[];
+  $('#memberList').innerHTML=ms.length?ms.map(function(m,i){
+   var owners=ms.filter(function(x){return x.role==='owner';}).length;
+   var self=(ME&&m.email.toLowerCase()===ME.email.toLowerCase());
+   return '<div class="memrow"><span class="mav">'+esc(initials(m.name||m.email))+'</span><div style="min-width:0;"><div class="mn">'+esc(m.name)+(self?' <span class="mut" style="font-weight:400;font-size:11px;">(you)</span>':'')+'</div><div class="me">'+esc(m.email)+'</div></div>'+
+    '<div class="mx"><select class="txt" data-memrole="'+i+'" style="flex:none;width:120px;min-width:120px;padding:7px 26px 7px 10px;font-size:12px;">'+
+     ['owner','manager','viewer'].map(function(r){return '<option value="'+r+'"'+(m.role===r?' selected':'')+'>'+r+'</option>';}).join('')+'</select>'+
+    '<button class="rmv" data-memrm="'+i+'" title="Remove '+(m.role==='owner'&&owners===1?'(blocked: last owner)':'member')+'" aria-label="Remove member">✕</button></div></div>';
+  }).join(''):'<p class="mut" style="font-size:13px;">No teammates yet — invite above.</p>';
+  $$('#memberList [data-memrole]').forEach(function(sel){
+   sel.addEventListener('change',function(){
+    if(!need('members')){renderMembers();return;}
+    var m=state.members[+sel.dataset.memrole];
+    if(m.role==='owner'&&sel.value!=='owner'&&state.members.filter(function(x){return x.role==='owner';}).length===1){toast('Workspace needs at least one owner','err');renderMembers();return;}
+    var old=m.role;m.role=sel.value;save();
+    logAudit('👤','Seat updated: <b>'+esc(m.name||m.email)+'</b> '+old+' → '+sel.value+'.');
+    if(ME&&m.email.toLowerCase()===ME.email.toLowerCase()){ME=m;applyRole();}
+    toast((m.name||m.email)+' is now '+sel.value);
+    renderMembers();
+   });
+  });
+  $$('#memberList [data-memrm]').forEach(function(btn){
+   btn.addEventListener('click',function(){
+    if(!need('members'))return;
+    var i=+btn.dataset.memrm,m=state.members[i];
+    if(m.role==='owner'&&state.members.filter(function(x){return x.role==='owner';}).length===1){toast('Can\u2019t remove the last owner','err');return;}
+    var you=(ME&&m.email.toLowerCase()===ME.email.toLowerCase());
+    state.members.splice(i,1);save();
+    logAudit('🚪','Seat removed: <b>'+esc(m.name||m.email)+'</b> ('+m.role+').');
+    toast((m.name||m.email)+' removed','warn','🚪');
+    if(you){signOut(true);return;}
+    renderMembers();renderChecklist();
+   });
+  });
+}
+function inviteMember(){
+  if(!need('members'))return;
+  var n=$('#memName').value.trim(),e=$('#memEmail').value.trim(),r=$('#memRole').value;
+  if(!n||!e||e.indexOf('@')<1){toast('Name + valid email, please','err');return;}
+  if(findMember(e)){toast('That email already has a seat','warn');return;}
+  state.members.push({name:n,email:e,role:r});save();
+  logAudit('💺','Seat invited: <b>'+esc(n)+'</b> ('+esc(e)+') as <b>'+r+'</b>.');
+  $('#memName').value='';$('#memEmail').value='';
+  toast('Seat reserved for '+n+' — they can sign in on this device','ok','💺');
+  renderMembers();renderChecklist();
+}
+function renderSettings(){
+  var ro=can('settings')?'':' readonly';
+  $('#setName').value=state.ws.name;
+  $('#setName').readOnly=!can('settings');
+  $('#setIndustries').innerHTML=INDUSTRIES.map(function(i){return '<button class="cchip'+(state.ws.industry===i?' on':'')+'" data-ind="'+esc(i)+'">'+esc(i)+'</button>';}).join('');
+  $$('#setIndustries [data-ind]').forEach(function(b){b.addEventListener('click',function(){
+    if(!need('settings'))return;
+    state.ws.industry=b.dataset.ind;save();
+    logAudit('🏭','Industry set to <b>'+esc(b.dataset.ind)+'</b>.');
+    renderSettings();renderKpis();toast('Industry set: '+b.dataset.ind);
+  });});
+  $('#setCurrencies').innerHTML=Object.keys(CUR).map(function(k){return '<button class="cchip'+(state.ws.currency===k?' on':'')+'" data-cur="'+k+'">'+CUR[k].s+' '+k+'</button>';}).join('');
+  $$('#setCurrencies [data-cur]').forEach(function(b){b.addEventListener('click',function(){
+    if(!need('settings'))return;
+    state.ws.currency=b.dataset.cur;save();
+    logAudit('💱','Currency changed to <b>'+CUR[b.dataset.cur].n+'</b>.');
+    renderAll();toast('Currency: '+CUR[b.dataset.cur].n+' ('+CUR[b.dataset.cur].s+')');
+  });});
+  $('#wsMeta').textContent='Created '+new Date(state.ws.created).toLocaleDateString()+' · '+(state.ws.demo?'Demo workspace with sample data':'Your private workspace')+(viewerMode?' · shared snapshot':' · stored only in this browser');
+  $('#apiKey').textContent=state.apikey+(viewerMode?'':'');
+  renderPrefs();renderMembers();
+}
 function saveWorkspaceName(){
+  if(!need('settings'))return;
   var v=$('#setName').value.trim();
   if(!v){toast('Workspace needs a name','err');return;}
-  state.ws.name=v;save();renderAll();
+  if(v===state.ws.name)return;
+  state.ws.name=v;save();
+  logAudit('🏷️','Workspace renamed to <b>'+esc(v)+'</b>.');
   pushFeed('🏷️','Workspace renamed to <b>'+esc(v)+'</b>.');
+  renderAll();
   toast('Workspace renamed to '+v,'ok','🏷️');
 }
-function renderAll(){renderKpis();renderChecklist();renderFeed();renderPolicies();renderAgents();renderApprovals();renderPayroll();renderCharts();renderSettings();}
-$('#search').addEventListener('input',renderAgents);
+function copyApiKey(){
+  try{navigator.clipboard.writeText(state.apikey);toast('Prototype API key copied','ok','🔑');}
+  catch(e){prompt('API key:',state.apikey);}
+}
+function renderAll(){renderKpis();renderChecklist();renderFeed();renderPolicies();renderAgents();renderMarket();renderApprovals();renderPayroll();renderCharts();renderAudit();renderSettings();}
 
 /* ---------- live tick ---------- */
 var TICKS=['answered 12 tickets with 98% CSAT','reconciled the morning ledger — 0 anomalies','briefed 3 competitor moves to the growth channel','shipped today\u2019s socials + product copy','flagged and rate-limited a credential-stuffing attempt','summarized 44 unread threads for the team','drafted next week\u2019s content calendar','closed 9 returns tickets end-to-end'];
 setInterval(function(){
-  if(!state||!state.prefs.tick)return;
+  if(!state||viewerMode||!state.prefs.tick)return;
   var act=state.agents.filter(function(a){return a.status==='active';});
   if(!act.length)return;
   var a=act[Math.floor(Math.random()*act.length)];
-  var add=1+Math.floor(Math.random()*3);a.tasks+=add;
+  a.tasks+=1+Math.floor(Math.random()*3);
   a.spent=Math.min(a.budget*1.05,a.spent+(0.3+Math.random()*1.4));
-  state.series[state.series.length-1]=Math.max(0,(state.series[state.series.length-1]||0)+Math.random()<.35?1:0);
+  if(Math.random()<.35)state.series[state.series.length-1]=(state.series[state.series.length-1]||0)+1;
   if(state.policies.capAudit&&a.spent/a.budget>0.8&&Math.random()<.3)pushFeed('🛡️','Cap-audit: <b>'+a.name+'</b> crossed 80% of budget.');
   else if(Math.random()<.45)pushFeed('⚡','<b>'+a.name+'</b> '+TICKS[Math.floor(Math.random()*TICKS.length)]+'.');
   renderKpis();renderCharts();
@@ -740,41 +1054,53 @@ setInterval(function(){
   save();
 },4500);
 
-/* ---------- export / import ---------- */
+/* ---------- export / import / share ---------- */
 function dl(name,content,type){
   var b=new Blob([content],{type:type||'text/plain'});var u=URL.createObjectURL(b);
   var a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();
   setTimeout(function(){URL.revokeObjectURL(u);a.remove();},400);
 }
 function slug(){return state.ws.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'roster';}
-function exportJSON(){dl(slug()+'-roster-backup.json',JSON.stringify(state,null,2),'application/json');toast('Backup downloaded','ok','⬇');}
+function exportJSON(){dl(slug()+'-roster-backup.json',JSON.stringify(state,null,2),'application/json');logAudit('⬇','Workspace backup exported.');toast('Backup downloaded','ok','⬇');}
 function toCSV(rows){return rows.map(function(r){return r.map(function(c){c=String(c==null?'':c);return /[",\n]/.test(c)?'"'+c.replace(/"/g,'""')+'"':c;}).join(',');}).join('\n');}
 function exportAgentsCSV(){
   if(!state.agents.length){toast('No agents to export yet','warn');return;}
   var rows=[['id','name','role','department','status','grade','budget_'+state.ws.currency,'spent_'+state.ws.currency,'tasks','scopes','since']];
   state.agents.forEach(function(a){rows.push([a.id,a.name,a.role,a.dept,a.status,a.grade,(a.budget*cur().r).toFixed(0),(a.spent*cur().r).toFixed(0),a.tasks,a.scopes.join(' | '),new Date(a.since).toISOString().slice(0,10)]);});
-  dl(slug()+'-agents.csv',toCSV(rows),'text/csv');toast('Agents CSV exported','ok','📄');
+  dl(slug()+'-agents.csv',toCSV(rows),'text/csv');logAudit('⬇','Agents CSV exported.');toast('Agents CSV exported','ok','📄');
 }
 function exportPayrollCSV(){
   if(!state.agents.length){toast('Nothing on payroll yet','warn');return;}
   var depts={};state.agents.forEach(function(a){var d=depts[a.dept]||(depts[a.dept]={budget:0,spent:0,tasks:0,n:0});d.budget+=a.budget;d.spent+=a.spent;d.tasks+=a.tasks;d.n++;});
   var rows=[['department','agents','budget_'+state.ws.currency,'spent_'+state.ws.currency,'utilization_pct','tasks']];
   Object.keys(depts).forEach(function(n){var d=depts[n];rows.push([n,d.n,(d.budget*cur().r).toFixed(0),(d.spent*cur().r).toFixed(0),d.budget?Math.round(d.spent/d.budget*100):0,d.tasks]);});
-  dl(slug()+'-payroll.csv',toCSV(rows),'text/csv');toast('Payroll CSV exported','ok','📄');
+  dl(slug()+'-payroll.csv',toCSV(rows),'text/csv');logAudit('⬇','Payroll CSV exported.');toast('Payroll CSV exported','ok','📄');
+}
+function exportAuditCSV(){
+  if(!state.audit.length){toast('Audit log is empty','warn');return;}
+  var rows=[['timestamp','actor','icon','event']];
+  state.audit.forEach(function(f){rows.push([new Date(f.ts).toISOString(),f.by||'system',f.ico,stripTags(f.txt)]);});
+  dl(slug()+'-audit.csv',toCSV(rows),'text/csv');toast('Audit CSV exported','ok','📄');
 }
 function copyLink(){
-  var url=location.origin+location.pathname+'?workspace='+encodeURIComponent(slug())+'&view=readonly';
-  try{navigator.clipboard.writeText(url);toast('View-only link copied','ok','🔗');}
-  catch(e){prompt('Copy link:',url);}
+  var b=b64e(JSON.stringify(state));
+  if(!b){toast('Couldn\u2019t build snapshot','err');return;}
+  var url=location.origin+location.pathname+'#s='+b;
+  logAudit('🔗','Shared snapshot link generated.');
+  try{navigator.clipboard.writeText(url);toast('Shared link copied — opens a read-only snapshot for anyone','ok','🔗');}
+  catch(e){prompt('Copy this shared snapshot link:',url);}
 }
+function importPick(){ if(need('settings'))$('#impFile').click(); }
 $('#impFile').addEventListener('change',function(e){
+  if(!need('settings')){e.target.value='';return;}
   var f=e.target.files[0];if(!f)return;
   var r=new FileReader();
   r.onload=function(){
     try{
      var s=JSON.parse(r.result);
      if(!s||!Array.isArray(s.agents)||!s.ws)throw 0;
-     state=Object.assign(demoState(),s,{v:2});save();renderAll();
+     state=inflate(s);save();applyRole();renderAll();
+     logAudit('⬆','Backup restored — workspace imported.');
      toast('Backup restored — workspace imported','ok','⬆');
     }catch(err){toast('That file isn\u2019t a Roster backup','err');}
     e.target.value='';
@@ -782,20 +1108,62 @@ $('#impFile').addEventListener('change',function(e){
   r.readAsText(f);
 });
 function resetWorkspace(){
-  if(!resetWorkspace.arm){resetWorkspace.arm=true;$('#resetBtn').textContent='Really erase everything?';setTimeout(function(){resetWorkspace.arm=false;$('#resetBtn').textContent='Reset workspace';},4000);return;}
-  localStorage.removeItem(KEY);location.reload();
+  if(!need('danger'))return;
+  if(!resetWorkspace.arm){resetWorkspace.arm=true;$('#resetBtn').textContent='Really erase everything?';setTimeout(function(){resetWorkspace.arm=false;var b=$('#resetBtn');if(b)b.textContent='Reset workspace';},4000);return;}
+  logAudit('🗑','Workspace reset initiated.');
+  try{var s2=JSON.stringify({audit:state.audit});localStorage.removeItem(KEY);}catch(e){}
+  localStorage.removeItem(SKEY);location.hash='';location.reload();
 }
+function clearAudit(){
+  if(!need('danger'))return;
+  if(!clearAudit.arm){clearAudit.arm=true;$('#auditClearBtn').textContent='Really clear?';setTimeout(function(){clearAudit.arm=false;var b=$('#auditClearBtn');if(b)b.textContent='Clear log';},4000);return;}
+  clearAudit.arm=false;
+  state.audit=[{ts:Date.now(),ico:'🧹',txt:'Audit log cleared by owner.',by:ME?ME.name:'owner'}];
+  save();renderAudit();toast('Audit log cleared','warn','🧹');
+}
+function exitSnapshot(){location.hash='';location.reload();}
+
+/* ---------- weekly report ---------- */
+function openReport(){
+  var act=state.agents.filter(function(a){return a.status==='active';});
+  var tb=0,ts2=0,tt=0;top=null;
+  state.agents.forEach(function(a){tb+=a.budget;ts2+=a.spent;tt+=a.tasks;if(!top||a.tasks>top.tasks)top=a;});
+  var decided=state.audit.filter(function(f){return f.ico==='✍️'||f.ico==='🚫';}).length;
+  var rep={generated:new Date().toISOString(),workspace:state.ws.name,currency:state.ws.currency,
+   agents:{total:state.agents.length,active:act.length},tasks:tt,
+   spend_native:+(ts2*cur().r).toFixed(0),budget_native:+(tb*cur().r).toFixed(0),
+   utilization:tb?Math.round(ts2/tb*100):0,approvals_decided:decided,
+   top_agent:top?{name:top.name,role:top.role,tasks:top.tasks}:null,
+   team:(state.members||[]).length};
+  $('#repModal').innerHTML='<div class="m-head"><div><h3>📈 Weekly workforce report</h3><p class="mut" style="font-size:13px;margin-top:4px;">'+esc(state.ws.name)+' · generated '+new Date().toLocaleString()+'</p></div><button class="m-x" onclick="closeRep()" aria-label="Close">✕</button></div>'+
+   '<div class="rep-kpis">'+
+   '<div class="kpi" style="--kc:var(--violet)"><div class="kv">'+act.length+'</div><div class="kk">Active agents</div><div class="kd">'+state.agents.length+' total rostered</div></div>'+
+   '<div class="kpi" style="--kc:var(--teal)"><div class="kv">'+fmt(tt)+'</div><div class="kk">Tasks this period</div><div class="kd">'+(top?'MVP: <b>'+esc(top.name)+'</b>':'—')+'</div></div>'+
+   '<div class="kpi" style="--kc:var(--sky)"><div class="kv">'+money(ts2)+'</div><div class="kk">Spend</div><div class="kd">'+(tb?Math.round(ts2/tb*100):0)+'% of '+money(tb)+' budget</div></div>'+
+   '<div class="kpi" style="--kc:var(--amber)"><div class="kv">'+decided+'</div><div class="kk">Decisions signed</div><div class="kd">'+(state.members||[]).length+' seat'+((state.members||[]).length===1?'':'s')+' on the team</div></div>'+
+   '</div>'+
+   '<p class="mut" style="font-size:12.5px;line-height:1.7;">'+(top?('Highlight: <b style="color:var(--text);">'+esc(top.name)+'</b> ('+esc(top.role)+') carried the week with '+fmt(top.tasks)+' tasks. '):'')+
+   (rep.utilization>85?'⚠️ Burn is running hot — consider raising caps or pausing low-priority agents.':'Burn is healthy — headroom remains for new hires.')+'</p>'+
+   '<div class="m-foot"><button class="btn btn-g" onclick="closeRep()">Close</button><button class="btn btn-p" onclick="dlReport()">⬇ Download JSON</button></div>';
+  window.__lastReport=rep;
+  $('#repOv').classList.add('show');
+}
+function closeRep(){$('#repOv').classList.remove('show');}
+function dlReport(){if(window.__lastReport)dl(slug()+'-weekly-report.json',JSON.stringify(window.__lastReport,null,2),'application/json');logAudit('📈','Weekly report generated.');toast('Report downloaded','ok','📈');}
 
 /* ---------- hire wizard ---------- */
 var HW=null;
-function openHire(){
-  HW={step:0,role:null,name:'',scopes:{},budget:200};
-  ROLES.forEach(function(r){});
-  $('#hireOv').classList.add('show');renderHire();
+function openHire(tpl){
+  if(!need('hire'))return;
+  HW={step:0,t:null,name:'',scopes:{},budget:200};
+  $('#hireOv').classList.add('show');
+  if(tpl){pickTemplate(tpl,false);HW.step=1;}
+  renderHire();
 }
+function deployPack(tpl){openHire(tpl);}
 function closeHire(){$('#hireOv').classList.remove('show');HW=null;}
 $('#hireOv').addEventListener('click',function(e){if(e.target===this)closeHire();});
-$('#hireBtn').addEventListener('click',openHire);
+$('#hireBtn').addEventListener('click',function(){openHire();});
 function diceName(){
   var taken={};state.agents.forEach(function(a){taken[a.name.toLowerCase()]=1;});
   var pool=CALLSIGNS.filter(function(c){return !taken[c.toLowerCase()];});
@@ -803,21 +1171,31 @@ function diceName(){
   HW.name=pool[Math.floor(Math.random()*pool.length)];
   var el=$('#hwName');if(el)el.value=HW.name;
 }
+function pickTemplate(tpl,rerender){
+  HW.t=tpl;HW.scopes={};tpl.scopes.forEach(function(s){HW.scopes[s]=1;});
+  HW.budget=tpl.budget;
+  if(!HW.name){HW.name='';diceName();}
+  if(rerender!==false&&HW.step===0)renderHire();
+}
 function renderHire(){
   var m=$('#hireModal');var s=HW.step;
   var steps='<div class="steps">'+[0,1,2,3].map(function(i){return '<i class="'+(i<=s?'on':'')+'"></i>';}).join('')+'</div>';
   if(s===0){
    m.innerHTML='<div class="m-head"><div><h3>Hire an agent</h3><p class="mut" style="font-size:13px;margin-top:4px;">Step 1 of 4 — pick a role template.</p></div><button class="m-x" onclick="closeHire()" aria-label="Close">✕</button></div>'+steps+
-    '<div class="rolegrid">'+ROLES.map(function(r,i){return '<button class="role'+(HW.role===i?' on':'')+'" onclick="pickRole('+i+')"><b>'+r.ico+' '+r.name+'</b><span>'+r.desc+'<br><span style="color:var(--teal);">'+r.scopes.join(' · ')+' — '+money(r.budget)+'/mo</span></span></button>';}).join('')+'</div>'+
-    '<div class="m-foot"><button class="btn btn-g" onclick="closeHire()">Cancel</button><button class="btn btn-p" '+(HW.role===null?'disabled':'')+' onclick="hwStep(1)">Continue →</button></div>';
+    '<div class="rolegrid">'+ROLES.map(function(r,i){return '<button class="role'+(HW.t&&HW.t.role===r.role?' on':'')+'" data-role="'+i+'"><b>'+r.ico+' '+r.role+'</b><span>'+r.desc+'<br><span style="color:var(--teal);">'+r.scopes.join(' · ')+' — '+money(r.budget)+'/mo</span></span></button>';}).join('')+'</div>'+
+    '<p class="mut" style="font-size:12px;margin-top:12px;">Need Legal, HR, Sales or QA? <a href="#" id="hwMarket" style="color:var(--teal);border-bottom:1px dashed rgba(94,234,212,.5);">🛒 8 more packs in the Marketplace →</a></p>'+
+    '<div class="m-foot"><button class="btn btn-g" onclick="closeHire()">Cancel</button><button class="btn btn-p" id="hwC"'+(HW.t?'':' disabled')+'>Continue →</button></div>';
+   $$('#hireModal [data-role]').forEach(function(b){b.addEventListener('click',function(){pickTemplate(ROLES[+b.dataset.role]);});});
+   $('#hwMarket').addEventListener('click',function(e){e.preventDefault();closeHire();show('market');});
+   var c=$('#hwC');if(c)c.addEventListener('click',function(){if(HW.t)hwStep(1);});
   }else if(s===1){
-   var r=ROLES[HW.role];
-   m.innerHTML='<div class="m-head"><div><h3>Name your '+r.ico+' '+r.name+'</h3><p class="mut" style="font-size:13px;margin-top:4px;">Step 2 of 4 — every agent gets a call sign.</p></div><button class="m-x" onclick="closeHire()" aria-label="Close">✕</button></div>'+steps+
+   var r=HW.t;
+   m.innerHTML='<div class="m-head"><div><h3>Name your '+(r.ico||'🤖')+' '+esc(r.role)+'</h3><p class="mut" style="font-size:13px;margin-top:4px;">Step 2 of 4 — every agent gets a call sign.</p></div><button class="m-x" onclick="closeHire()" aria-label="Close">✕</button></div>'+steps+
     '<label class="lbl" for="hwName">Call sign</label><div class="callrow"><input class="txt" id="hwName" maxlength="16" value="'+esc(HW.name)+'" placeholder="e.g. Nova"/><button class="dice" onclick="diceName()" title="Random call sign" aria-label="Random call sign">🎲</button></div>'+
-    '<p class="mut" style="font-size:12px;margin-top:12px;">Department: <b style="color:var(--text);">'+r.dept+'</b> — payroll files it there automatically.</p>'+
+    '<p class="mut" style="font-size:12px;margin-top:12px;">Department: <b style="color:var(--text);">'+esc(r.dept)+'</b> — payroll files it there automatically.</p>'+
     '<div class="m-foot"><button class="btn btn-g" onclick="hwStep(0)">← Back</button><button class="btn btn-p" id="hwNext2">Continue →</button></div>';
-   $('#hwName').focus();$('#hwName').select();
-   $('#hwName').addEventListener('input',function(e){HW.name=e.target.value;});
+   var nm=$('#hwName');nm.focus();nm.select();
+   nm.addEventListener('input',function(e){HW.name=e.target.value;});
    $('#hwNext2').addEventListener('click',function(){
      HW.name=HW.name.trim();
      if(!HW.name){toast('Give the agent a call sign','err');return;}
@@ -828,46 +1206,42 @@ function renderHire(){
    m.innerHTML='<div class="m-head"><div><h3>Grant powers</h3><p class="mut" style="font-size:13px;margin-top:4px;">Step 3 of 4 — least privilege. Grant only what it needs.</p></div><button class="m-x" onclick="closeHire()" aria-label="Close">✕</button></div>'+steps+
     '<label class="lbl">Allowed scopes</label><div class="scopegrid">'+SCOPECAT.map(function(sc){
       var on=HW.scopes[sc];
-      return '<label class="scp'+(on?' on':'')+'"><input type="checkbox" '+(on?'checked':'')+' onchange="toggleScope(\''+sc+'\',this)"/>'+sc+'</label>';
+      return '<label class="scp'+(on?' on':'')+'"><input type="checkbox" '+(on?'checked':'')+' data-scope="'+sc+'"/>'+sc+'</label>';
     }).join('')+'</div>'+
     '<p class="mut" style="font-size:12px;margin-top:12px;">Anything unchecked is hard-blocked and listed as off-limits on the agent\u2019s file.</p>'+
     '<div class="m-foot"><button class="btn btn-g" onclick="hwStep(1)">← Back</button><button class="btn btn-p" onclick="hwStep(3)">Continue →</button></div>';
+   $$('#hireModal [data-scope]').forEach(function(inp){
+    inp.addEventListener('change',function(){
+     if(inp.checked)HW.scopes[inp.dataset.scope]=1;else delete HW.scopes[inp.dataset.scope];
+     inp.parentNode.classList.toggle('on',inp.checked);
+    });
+   });
   }else{
-   var r=ROLES[HW.role];
+   var r2=HW.t;
    m.innerHTML='<div class="m-head"><div><h3>Set the budget</h3><p class="mut" style="font-size:13px;margin-top:4px;">Step 4 of 4 — hard monthly cap. Agents can never exceed it.</p></div><button class="m-x" onclick="closeHire()" aria-label="Close">✕</button></div>'+steps+
     '<div class="rangeout" id="hwBudgetOut">'+money(HW.budget)+' / mo</div>'+
     '<input type="range" min="20" max="500" step="10" value="'+HW.budget+'" id="hwBudget" aria-label="Monthly budget"/>'+
-    '<div class="mut" style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;margin-top:2px;"><span>'+money(20)+'</span><span>template default '+money(r.budget)+'</span><span>'+money(500)+'</span></div>'+
+    '<div class="mut" style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;margin-top:2px;"><span>'+money(20)+'</span><span>template default '+money(r2.budget)+'</span><span>'+money(500)+'</span></div>'+
     '<div class="m-foot"><button class="btn btn-g" onclick="hwStep(2)">← Back</button><button class="btn btn-p" onclick="confirmHire()">🎉 Hire '+esc(HW.name)+'</button></div>';
    $('#hwBudget').addEventListener('input',function(e){HW.budget=+e.target.value;$('#hwBudgetOut').textContent=money(HW.budget)+' / mo';});
   }
 }
-function byName(n){var r=false;state.agents.forEach(function(a){if(a.name.toLowerCase()===n.toLowerCase())r=true;});return r;}
-function pickRole(i){
-  HW.role=i;
-  var r=ROLES[i];HW.scopes={};r.scopes.forEach(function(s){HW.scopes[s]=1;});
-  HW.budget=r.budget;
-  if(!HW.name)diceName();
-  renderHire();
-}
-function toggleScope(sc,inp){if(inp.checked)HW.scopes[sc]=1;else delete HW.scopes[sc];inp.parentNode.classList.toggle('on',inp.checked);}
-function hwStep(n){
-  if(n===2){var keep=[];for(var k in (HW&&HW.role!==null&&HW.role!=='custom'?{}:HW.scopes||{}))keep.push(k);}
-  HW.step=n;renderHire();
-}
+function hwStep(n){HW.step=n;renderHire();}
 function confirmHire(){
-  var r=ROLES[HW.role];
+  var r=HW.t;
   var scopes=[];for(var k in HW.scopes)scopes.push(k);
   if(!scopes.length){toast('Grant at least one scope','err');hwStep(2);return;}
-  var ag=mkAgent({id:'ag'+(state.counters.agt++),name:HW.name.trim(),role:r.name,dept:r.dept,budget:HW.budget,scopes:scopes,offScopes:SCOPECAT.filter(function(s){return !HW.scopes[s];}),grade:'A',tasks:0});
+  var ag=mkAgent({id:'ag'+(state.counters.agt++),name:HW.name.trim(),role:r.role,dept:r.dept,budget:HW.budget,scopes:scopes,offScopes:SCOPECAT.filter(function(s){return !HW.scopes[s];}),grade:'A',tasks:0});
   state.agents.unshift(ag);
   state.flags.firstHire=true;save();
+  logAudit('🆕','<b>'+esc(ag.name)+'</b> hired as '+esc(ag.role)+' — '+money(ag.budget)+'/mo, '+ag.scopes.length+' scopes, hired by '+(ME?esc(ME.name):'owner')+'.');
   $('#hireModal').innerHTML='<div class="m-head"><div><h3 class="grad">Agent hired 🎉</h3><p class="mut" style="font-size:13px;margin-top:4px;">Credential issued — it\u2019s live on your payroll.</p></div><button class="m-x" onclick="closeHire()" aria-label="Close">✕</button></div>'+
    '<div id="badge"><div class="b-top"><span>ROSTER · AGENT ID</span><span>'+ag.id.toUpperCase()+'-'+String(state.counters.agt+100)+'</span></div>'+
    '<div class="b-name">'+esc(ag.name)+'</div><div class="b-role">'+esc(ag.role)+' · '+esc(ag.dept)+'</div>'+
    '<div class="b-grid"><div>BUDGET<b>'+money(ag.budget)+' / mo</b></div><div>STATUS<b>ACTIVE ● deployed</b></div><div>SCOPES GRANTED<b>'+ag.scopes.length+' powers</b></div><div>HARD-BLOCKED<b>'+ag.offScopes.length+' off-limits</b></div></div>'+
    '<div class="stamp">Verified · Ψ</div></div>'+
-   '<div class="m-foot"><button class="btn btn-g" onclick="closeHire()">Done</button><button class="btn btn-p" onclick="closeHire();openDrawer(\''+ag.id+'\')">Open '+esc(ag.name)+'\u2019s file →</button></div>';
+   '<div class="m-foot"><button class="btn btn-g" onclick="closeHire()">Done</button><button class="btn btn-p" id="hwOpenFile">Open '+esc(ag.name)+'\u2019s file →</button></div>';
+  $('#hwOpenFile').addEventListener('click',function(){closeHire();openDrawer(ag.id);});
   pushFeed('🆕','<b>'+esc(ag.name)+'</b> hired as '+esc(ag.role)+' — budget '+money(ag.budget)+'/mo.');
   toast(ag.name+' is on the clock. Welcome aboard, '+ag.name+'!','ok','🤖');
   renderAll();
@@ -879,76 +1253,98 @@ function openDrawer(id){
   var used=Math.min(100,a.budget?a.spent/a.budget*100:0);
   var pendingResume=state.approvals.some(function(ap){return ap.kind==='resume'&&ap.agent===a.id;});
   var off=a.status==='offboarded';
+  var canB=can('budget'),canP=can('pause'),canR=can('retire')&&can('approve');
   d.innerHTML='<div class="m-head"><div style="display:flex;gap:13px;align-items:center;"><span class="avatar" style="--ac:'+agentAccent(a)+';width:46px;height:46px;font-size:17px;">'+esc(a.name[0])+'</span><div><h3 style="font-size:19px;">'+esc(a.name)+'</h3><span class="mut" style="font-size:12.5px;">'+esc(a.role)+' · '+esc(a.dept)+'</span></div></div><button class="m-x" onclick="closeDrawer()" aria-label="Close">✕</button></div>'+
-  '<div style="display:flex;gap:8px;align-items:center;margin-top:6px;"><span class="ast st-'+a.status+'">'+a.status+'</span><span class="grade '+(a.grade==='A+'?'g-aplus':a.grade==='A'?'g-a':'g-b')+'">Grade '+a.grade+'</span><span class="mut" style="font-family:var(--mono);font-size:10px;margin-left:auto;">since '+new Date(a.since).toLocaleDateString()+'</span></div>'+
+  '<div style="display:flex;gap:8px;align-items:center;margin-top:6px;flex-wrap:wrap;"><span class="ast st-'+a.status+'">'+a.status+'</span><span class="grade '+(a.grade==='A+'?'g-aplus':a.grade==='A'?'g-a':'g-b')+'">Grade '+a.grade+'</span><span class="mut" style="font-family:var(--mono);font-size:10px;margin-left:auto;">since '+new Date(a.since).toLocaleDateString()+'</span></div>'+
   '<div class="doc-sec"><span class="lbl">Monthly budget — '+money(a.spent)+' of <b id="drBudgetOut" style="color:var(--teal);">'+money(a.budget)+'</b> ('+Math.round(used)+'% used)</span>'+
    '<div class="st-bar" style="margin:6px 0 12px;"><i class="'+(used>80?'hot':'')+'" style="width:'+used+'%"></i></div>'+
-   (off?'':'<input type="range" min="20" max="500" step="10" value="'+a.budget+'" id="drBudget" aria-label="Budget"/>')+
+   (off||!canB?'':'<input type="range" min="20" max="500" step="10" value="'+a.budget+'" id="drBudget" aria-label="Budget"/>')+
   '</div>'+
   '<div class="doc-sec"><span class="lbl">Granted powers ('+a.scopes.length+')</span><div class="ascope" style="margin-top:0;">'+(a.scopes.length?a.scopes.map(function(s){return '<span class="chip">'+s+'</span>';}).join(''):'<span class="mut" style="font-size:12px;">none</span>')+'</div></div>'+
   '<div class="doc-sec"><span class="lbl">Off-limits ('+a.offScopes.length+')</span><div class="ascope" style="margin-top:0;">'+(a.offScopes.length?a.offScopes.map(function(s){return '<span class="chip chip-off">'+s+'</span>';}).join(''):'<span class="mut" style="font-size:12px;">none — full trust</span>')+'</div></div>'+
   '<div class="doc-sec"><span class="lbl">Actions</span><div class="switches-row">'+
-   (off?'<button class="btn btn-g btn-sm" disabled>Retired — read only</button>':
-    a.status==='active'?'<button class="btn btn-g btn-sm" onclick="pauseAgent(\''+a.id+'\')">⏸ Pause</button>':
-    '<button class="btn btn-p btn-sm" '+(pendingResume?'disabled':'')+' onclick="requestResume(\''+a.id+'\')">'+(pendingResume?'⏳ Resume pending approval':'▶ Request resume')+'</button>')+
-   (off?'':'<button class="btn btn-danger btn-sm" id="retireBtn" onclick="retireAgent(\''+a.id+'\')">🕊 Retire</button>')+
+   (off?'<span class="locked">Retired — read only 🕊</span>':
+    (!canP?'<span class="locked">🔒 manager+ controls</span>':
+      a.status==='active'?'<button class="btn btn-g btn-sm" id="drPause">⏸ Pause</button>':
+      '<button class="btn btn-p btn-sm" id="drResume" '+(pendingResume?'disabled':'')+'>'+(pendingResume?'⏳ Resume pending approval':'▶ Request resume')+'</button>')+
+    (canR?'<button class="btn btn-danger btn-sm" id="retireBtn">🕊 Retire</button>':''))+
   '</div></div>'+
-  '<div class="doc-sec"><span class="lbl">Performance</span><p class="mut" style="font-size:13px;line-height:1.7;">'+fmt(a.tasks)+' tasks completed<br/>Burn rate ≈ '+money(a.spent/Math.max(1,(Date.now()-a.since)/864e5))+ '/day<br/>'+(a.spent>a.budget*.8?'⚠️ Approaching cap — cap-audit will flag.':'Well within budget.')+'</p></div>';
+  '<div class="doc-sec"><span class="lbl">Performance</span><p class="mut" style="font-size:13px;line-height:1.7;">'+fmt(a.tasks)+' tasks completed<br/>Burn rate ≈ '+money(a.spent/Math.max(1,(Date.now()-a.since)/864e5))+'/day<br/>'+(a.spent>a.budget*.8?'⚠️ Approaching cap — cap-audit will flag.':'Well within budget.')+'</p></div>';
   d.classList.add('show');
   var rng=$('#drBudget');
-  if(rng)rng.addEventListener('input',function(e){
-   a.budget=+e.target.value;$('#drBudgetOut').textContent=money(a.budget);
-   save();renderKpis();renderAgents();renderCharts();
-  });
-  if(rng)rng.addEventListener('change',function(){pushFeed('🎚️','<b>'+a.name+'</b>\u2019s budget set to '+money(a.budget)+'/mo.');renderPayroll();});
+  if(rng){
+   rng.addEventListener('input',function(e){
+    a.budget=+e.target.value;$('#drBudgetOut').textContent=money(a.budget);
+    save();renderKpis();renderAgents();renderCharts();
+   });
+   rng.addEventListener('change',function(){logAudit('🎚️','<b>'+esc(a.name)+'</b>\u2019s budget set to '+money(a.budget)+'/mo.');pushFeed('🎚️','<b>'+a.name+'</b>\u2019s budget set to '+money(a.budget)+'/mo.');renderPayroll();});
+  }
+  var pb=$('#drPause');if(pb)pb.addEventListener('click',function(){pauseAgent(a.id);});
+  var rb=$('#drResume');if(rb)rb.addEventListener('click',function(){requestResume(a.id);});
+  var tb2=$('#retireBtn');if(tb2)tb2.addEventListener('click',function(){retireAgent(a.id);});
 }
 function closeDrawer(){$('#drawer').classList.remove('show');}
 function pauseAgent(id){
+  if(!need('pause'))return;
   var a=byId(id);if(!a)return;
   a.status='paused';save();
-  pushFeed('⏸','<b>'+a.name+'</b> paused by workspace owner.');
+  logAudit('⏸','<b>'+esc(a.name)+'</b> paused.');
+  pushFeed('⏸','<b>'+a.name+'</b> paused by '+(ME?ME.name:'owner')+'.');
   toast(a.name+' paused — no tasks, no spend','warn','⏸');
   renderAll();closeDrawer();
 }
 function requestResume(id){
+  if(!need('pause'))return;
   var a=byId(id);if(!a)return;
   var idn='APR-'+(state.counters.apr++);
   state.approvals.push({id:idn,agent:a.id,kind:'resume',title:'Resume '+a.name+' ('+a.role+')',detail:'Resuming requires human approval under your Human-in-the-loop policy.',impact:'Restores '+a.name+' to active duty.',status:'pending',ts:Date.now()});
-  save();pushFeed('▶','Resume requested for <b>'+a.name+'</b> — waiting on your signature ('+idn+').');
+  save();
+  logAudit('▶','Resume requested for <b>'+esc(a.name)+'</b> ('+idn+').');
+  pushFeed('▶','Resume requested for <b>'+a.name+'</b> — waiting on signature ('+idn+').');
   toast('Resume request queued in Approvals','ok','✋');
   renderAll();openDrawer(id);
 }
 function retireAgent(id){
-  var a=byId(id);if(!a)return;var b=$('#retireBtn');
+  if(!need('retire'))return;
+  var a=byId(id);if(!a)return;var b=$('#retireBtn');if(!b)return;
   if(!retireAgent.arm||retireAgent.arm!==id){
    retireAgent.arm=id;
    b.textContent='Confirm offboarding — irreversible';
-   setTimeout(function(){if(retireAgent.arm===id){retireAgent.arm=null;if(document.body.contains(b))b.textContent='🕊 Retire';}},4500);
+   setTimeout(function(){if(retireAgent.arm===id){retireAgent.arm=null;var b2=$('#retireBtn');if(b2)b2.textContent='🕊 Retire';}},4500);
    return;
   }
   retireAgent.arm=null;
   a.status='offboarded';save();
+  logAudit('🕊','<b>'+esc(a.name)+'</b> retired — scopes revoked, payroll settled.');
   pushFeed('🕊','<b>'+a.name+'</b> retired. Scopes revoked, final payroll settled.');
   toast(a.name+' has been offboarded with honors 🕊','warn');
   renderAll();openDrawer(id);
 }
 
 /* ---------- onboarding ---------- */
-var OB={step:0,name:'',industry:'Retail & E-commerce',currency:'USD'};
+var OB={step:0,name:'',you:'',email:'',industry:'Retail & E-commerce',currency:'USD'};
 function renderOnb(){
   var m=$('#onbModal');
   var steps='<div class="steps">'+[0,1,2].map(function(i){return '<i class="'+(i<=OB.step?'on':'')+'"></i>';}).join('')+'</div>';
   if(OB.step===0){
    m.innerHTML='<div class="ob-hero"><svg class="psi" viewBox="0 0 60 60" fill="none"><path d="M12 6c0 24 4 38 22 38 8 0 14-5 14-13 0-9-7-14-15-14-6 0-10 3-12 7" stroke="url(#og)" stroke-width="5" stroke-linecap="round"/><defs><linearGradient id="og" x1="0" y1="0" x2="60" y2="60"><stop stop-color="#a78bfa"/><stop offset="1" stop-color="#5eead4"/></linearGradient></defs></svg>'+
     '<div><h3>Welcome to <span class="grad">Roster</span></h3><p class="mut" style="font-size:13px;margin-top:3px;">HR for AI agents — hire, approve, budget and retire your digital workforce. By PSYCHE Group.</p></div></div>'+steps+
-    '<label class="lbl" for="obName">Name your workspace</label>'+
+    '<div class="ob2"><div><label class="lbl" for="obYou">Your name</label><input class="txt" id="obYou" maxlength="24" placeholder="e.g. Adaeze Okafor" style="max-width:none;width:100%;"/></div>'+
+    '<div><label class="lbl" for="obMail">Work email</label><input class="txt" id="obMail" maxlength="48" type="email" placeholder="you@company.com" style="max-width:none;width:100%;"/></div></div>'+
+    '<label class="lbl" for="obName">Workspace name</label>'+
     '<input class="txt" id="obName" maxlength="40" placeholder="e.g. Dangote Digital, ShopNaija, Acme Corp" style="max-width:none;width:100%;"/>'+
     '<div class="m-foot"><button class="btn btn-p" id="obNext" style="width:100%;justify-content:center;">Create workspace →</button></div>'+
-    '<p class="ob-foot">Takes 20 seconds · data stays in your browser · prototype</p>';
-   $('#obName').focus();
-   var go=function(){var v=$('#obName').value.trim();if(!v){toast('Give your workspace a name','err');return;}OB.name=v;OB.step=1;renderOnb();};
+    '<p class="ob-foot">You\u2019ll be the workspace <b>owner</b> · invite teammates in Settings · 20 seconds, data stays in your browser</p>';
+   $('#obYou').focus();
+   var go=function(){
+     OB.you=$('#obYou').value.trim();OB.email=$('#obMail').value.trim();OB.name=$('#obName').value.trim();
+     if(!OB.you){toast('Your name? The agents need to know their boss','err');return;}
+     if(!OB.email||OB.email.indexOf('@')<1){toast('A valid work email, please','err');return;}
+     if(!OB.name){toast('Give your workspace a name','err');return;}
+     OB.step=1;renderOnb();
+   };
    $('#obNext').addEventListener('click',go);
-   $('#obName').addEventListener('keydown',function(e){if(e.key==='Enter')go();});
+   ['#obYou','#obMail','#obName'].forEach(function(id){$(id).addEventListener('keydown',function(e){if(e.key==='Enter')go();});});
   }else if(OB.step===1){
    m.innerHTML='<h3>What does '+esc(OB.name)+' do?</h3><p class="mut" style="font-size:13px;margin:4px 0 0;">This tunes payroll department defaults.</p>'+steps+
     '<div class="chiplist">'+INDUSTRIES.map(function(i){return '<button class="cchip'+(OB.industry===i?' on':'')+'" data-ob-ind="'+esc(i)+'">'+esc(i)+'</button>';}).join('')+'</div>'+
@@ -961,7 +1357,7 @@ function renderOnb(){
   }else{
    m.innerHTML='<h3>Launch '+esc(OB.name)+'</h3><p class="mut" style="font-size:13px;margin:4px 0 0;">One last choice — how do you want to start?</p>'+steps+
     '<div class="ob-opts">'+
-    '<button class="ob-opt reco" id="obDemo"><span class="oo">🧪</span><b>Load demo workspace</b><span>Northwind Retail — 8 agents, live approvals and payroll pre-filled. Best way to explore everything fast.</span></button>'+
+    '<button class="ob-opt reco" id="obDemo"><span class="oo">🧪</span><b>Load demo workspace</b><span>Northwind-style data — 8 agents, live approvals and payroll pre-filled. Best way to explore everything fast.</span></button>'+
     '<button class="ob-opt" id="obBlank"><span class="oo">🌱</span><b>Start clean</b><span>Empty '+esc(OB.name)+' workspace. Hire real agents of your own from scratch.</span></button>'+
     '</div>'+
     '<div class="m-foot"><button class="btn btn-g" onclick="obBack()">← Back</button></div>';
@@ -971,26 +1367,181 @@ function renderOnb(){
 }
 function obBack(){OB.step=Math.max(0,OB.step-1);renderOnb();}
 function finishOnb(demo){
-  if(demo){state=demoState();state.ws.name=OB.name;state.ws.industry=OB.industry;state.ws.currency=OB.currency;}
+  if(demo){state=demoState();state.ws.name=OB.name;state.ws.industry=OB.industry;state.ws.currency=OB.currency;state.ws.demo=true;}
   else{state=blankState(OB.name,OB.industry,OB.currency);}
+  state.members=[{name:OB.you,email:OB.email,role:'owner'}];
+  setSession(OB.email);ME=state.members[0];
+  logAudit('💺','Owner seat created for <b>'+esc(OB.you)+'</b>.');
   save();
   $('#onb').classList.remove('show');
-  renderAll();
-  toast('Welcome aboard, '+state.ws.name+' 🚀','ok','Ψ');
+  applyRole();renderAll();
+  toast('Welcome aboard, '+OB.you+' — '+state.ws.name+' is live 🚀','ok','Ψ');
 }
+
+/* ---------- sign-in gate ---------- */
+function showGate(mode){
+  var m=$('#gateModal');
+  var ms=state.members||[];
+  var chips=ms.length?'<label class="lbl">Sign in as</label><div class="memchips">'+ms.map(function(x,i){
+    return '<button class="memchip" data-gate="'+i+'"><span class="mav" style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--violet),var(--teal));color:#0b0a1f;font-weight:800;font-size:12px;display:flex;align-items:center;justify-content:center;flex:none;">'+esc(initials(x.name||x.email))+'</span><div style="text-align:left;"><b style="font-size:13.5px;">'+esc(x.name||x.email)+'</b><div class="mut" style="font-size:11.5px;">'+esc(x.email)+'</div></div><span class="ur '+x.role+'" style="margin-left:auto;font-family:var(--mono);font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;border:1px solid;border-radius:99px;padding:2px 8px;">'+x.role+'</span></button>';
+  }).join('')+'</div>':'';
+  m.innerHTML='<div class="ob-hero"><svg class="psi" viewBox="0 0 60 60" fill="none"><path d="M12 6c0 24 4 38 22 38 8 0 14-5 14-13 0-9-7-14-15-14-6 0-10 3-12 7" stroke="url(#og2)" stroke-width="5" stroke-linecap="round"/><defs><linearGradient id="og2" x1="0" y1="0" x2="60" y2="60"><stop stop-color="#a78bfa"/><stop offset="1" stop-color="#5eead4"/></linearGradient></defs></svg>'+
+   '<div><h3>Sign in to Roster</h3><p class="mut" style="font-size:13px;margin-top:3px;">Workspace: <b style="color:var(--text);">'+esc(state.ws.name)+'</b>'+(mode==='claim'?' — claim the owner seat to continue.':'')+'</p></div></div>'+
+   chips+
+   (mode==='claim'?
+    '<label class="lbl" style="margin-top:16px;">Claim ownership</label><div class="ob2"><input class="txt" id="claimName" maxlength="24" placeholder="Your name" style="max-width:none;"/><input class="txt" id="claimMail" maxlength="48" type="email" placeholder="Work email" style="max-width:none;"/></div><button class="btn btn-p" id="claimBtn" style="width:100%;justify-content:center;">Claim owner seat →</button>'
+   :'')+
+   '<p class="mut" style="font-size:12px;margin-top:16px;">Prototype sign-in — roles are real (owner / manager / viewer permissions switch live). Hosted version adds magic links &amp; SSO.</p>'+
+   '<div class="m-foot"><button class="btn btn-danger btn-sm" id="gateReset">Not your workspace? Reset</button></div>';
+  if(mode==='claim'){
+   $('#claimBtn').addEventListener('click',function(){
+    var n=$('#claimName').value.trim(),e=$('#claimMail').value.trim();
+    if(!n||e.indexOf('@')<1){toast('Name + valid email to claim ownership','err');return;}
+    var mem={name:n,email:e,role:'owner'};
+    state.members.push(mem);setSession(e);ME=mem;save();
+    logAudit('💺','Owner seat claimed by <b>'+esc(n)+'</b>.');
+    $('#gate').classList.remove('show');
+    applyRole();renderAll();
+    toast('Ownership claimed — welcome, '+n.split(' ')[0]+' 👑','ok','Ψ');
+   });
+  }
+  $$('#gateModal [data-gate]').forEach(function(b){
+   b.addEventListener('click',function(){
+    var x=state.members[+b.dataset.gate];
+    setSession(x.email);ME=x;
+    $('#gate').classList.remove('show');
+    applyRole();renderAll();
+    toast('Welcome back, '+x.name.split(' ')[0]+' 👋','ok','Ψ');
+   });
+  });
+  $('#gateReset').addEventListener('click',function(){
+   if(!showGate.arm){showGate.arm=true;$('#gateReset').textContent='Really erase & restart?';setTimeout(function(){showGate.arm=false;var b=$('#gateReset');if(b)b.textContent='Not your workspace? Reset';},4000);return;}
+   localStorage.removeItem(KEY);localStorage.removeItem(SKEY);location.reload();
+  });
+  $('#gate').classList.add('show');
+}
+function signOut(silent){
+  localStorage.removeItem(SKEY);ME=null;
+  if(!silent)toast('Signed out','warn','👋');
+  showGate();
+}
+$('#userChip').addEventListener('click',function(){
+  if(confirm('Sign out of '+state.ws.name+'?'))signOut();
+});
+
+/* ---------- command palette ---------- */
+var PAL_I=0,PAL_ITEMS=[];
+function palActions(){
+  var items=[];
+  items.push({t:'Hire agent',s:'action',ico:'🆕',fn:function(){openHire();},perm:'hire'});
+  items.push({t:'Browse Marketplace',s:'view',ico:'🛒',fn:function(){show('market');}});
+  items.push({t:'Weekly report',s:'action',ico:'📈',fn:function(){openReport();}});
+  items.push({t:'Copy shared snapshot link',s:'share',ico:'🔗',fn:function(){copyLink();}});
+  ['command','agents','market','approvals','payroll','audit','settings'].forEach(function(v){
+   items.push({t:'Go to '+({command:'Command Deck',agents:'Agents',market:'Marketplace',approvals:'Approvals',payroll:'Payroll',audit:'Audit Log',settings:'Settings'})[v],s:'view',ico:{command:'📊',agents:'🤖',market:'🛒',approvals:'✋',payroll:'💰',audit:'🧾',settings:'⚙️'}[v],fn:function(){show(v);}});
+  });
+  state.agents.forEach(function(a){
+   items.push({t:'Open '+a.name+' — '+a.role,s:a.status,ico:'🤖',fn:function(){openDrawer(a.id);}});
+   if(a.status==='active')items.push({t:'Pause '+a.name,s:'action',ico:'⏸',fn:function(){pauseAgent(a.id);},perm:'pause'});
+  });
+  items.push({t:'Export workspace backup (JSON)',s:'export',ico:'⬇',fn:function(){exportJSON();}});
+  items.push({t:'Export payroll CSV',s:'export',ico:'📄',fn:function(){exportPayrollCSV();}});
+  items.push({t:'Export audit CSV',s:'export',ico:'📄',fn:function(){exportAuditCSV();}});
+  if(ME)items.push({t:'Sign out ('+ME.name+')',s:'account',ico:'👋',fn:function(){signOut();}});
+  items.push({t:'Keyboard shortcuts',s:'help',ico:'❓',fn:function(){$('#helpOv').classList.add('show');}});
+  return items;
+}
+function openPal(){
+  $('#pal').classList.add('show');
+  var inp=$('#palIn');inp.value='';renderPal('');
+  setTimeout(function(){inp.focus();},30);
+}
+function closePal(){$('#pal').classList.remove('show');}
+function renderPal(q){
+  var all=palActions();
+  q=q.toLowerCase();
+  PAL_ITEMS=all.filter(function(it){return !q||(it.t+' '+(it.s||'')).toLowerCase().indexOf(q)>=0;}).slice(0,12);
+  PAL_I=0;
+  $('#palList').innerHTML=PAL_ITEMS.length?PAL_ITEMS.map(function(it,i){
+   return '<button class="palitem'+(i===PAL_I?' sel':'')+'" data-pi="'+i+'" role="option"><span class="pi">'+it.ico+'</span><span>'+esc(it.t)+(it.perm&&!can(it.perm)?' 🔒':'')+'</span><span class="ps">'+esc(it.s||'')+'</span></button>';
+  }).join(''):'<div style="padding:18px;color:var(--faint);font-size:13px;">No matches — try “hire”, “payroll”, “pause”…</div>';
+  $$('#palList .palitem').forEach(function(b){
+   b.addEventListener('mouseenter',function(){PAL_I=+b.dataset.pi;paintPal();});
+   b.addEventListener('click',function(){runPal(+b.dataset.pi);});
+  });
+}
+function paintPal(){$$('#palList .palitem').forEach(function(b,i){b.classList.toggle('sel',+b.dataset.pi===PAL_I);});}
+function runPal(i){
+  var it=PAL_ITEMS[i];if(!it)return;
+  if(it.perm&&!can(it.perm)){need(it.perm);return;}
+  closePal();it.fn();
+}
+$('#palOpen').addEventListener('click',openPal);
+$('#pal').addEventListener('click',function(e){if(e.target===this)closePal();});
+$('#palIn').addEventListener('input',function(e){renderPal(e.target.value);});
+$('#palIn').addEventListener('keydown',function(e){
+  if(e.key==='ArrowDown'){e.preventDefault();PAL_I=Math.min(PAL_ITEMS.length-1,PAL_I+1);paintPal();}
+  else if(e.key==='ArrowUp'){e.preventDefault();PAL_I=Math.max(0,PAL_I-1);paintPal();}
+  else if(e.key==='Enter'){e.preventDefault();runPal(PAL_I);}
+});
+
+/* ---------- help ---------- */
+function closeHelp(){$('#helpOv').classList.remove('show');}
+$('#helpOv').addEventListener('click',function(e){if(e.target===this)closeHelp();});
 
 /* ---------- keys ---------- */
 document.addEventListener('keydown',function(e){
-  if(e.key==='Escape'){closeHire();closeDrawer();return;}
+  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();if(state)openPal();return;}
+  if(e.key==='Escape'){closeHire();closeDrawer();closePal();closeHelp();closeRep();return;}
   var tag=(e.target.tagName||'').toLowerCase();
-  if(tag==='input'||tag==='textarea'||!state)return;
+  if(tag==='input'||tag==='textarea'||tag==='select'||!state)return;
   if(e.key==='n'||e.key==='N'){e.preventDefault();openHire();}
+  else if(e.key==='/'){e.preventDefault();openPal();}
+  else if(e.key==='?'){$('#helpOv').classList.add('show');}
 });
 
 /* ---------- boot ---------- */
-state=load();
-if(!state){OB.step=0;$('#onb').classList.add('show');renderOnb();}
-renderAll();
+(function boot(){
+  /* shared snapshot mode */
+  if(location.hash.indexOf('#s=')===0){
+   var raw=b64d(location.hash.slice(3));
+   if(raw){
+    try{
+     var s=JSON.parse(raw);
+     if(s&&s.agents&&s.ws){
+      viewerMode=true;
+      state=inflate(s);
+      state.prefs.tick=false;
+      $('#snapBanner').hidden=false;
+      $('#snapName').textContent=' — '+s.ws.name+' · '+s.agents.length+' agents · frozen '+new Date(s.audit&&s.audit[0]?s.ws.created:Date.now()).toLocaleDateString();
+      document.body.className='ro-viewer';
+      renderAll();applyRole();
+      return;
+     }
+    }catch(e){}
+   }
+   setTimeout(function(){toast('That shared link is damaged — loading your workspace instead','err');},500);
+  }
+  state=load();
+  if(!state){OB.step=0;renderOnb();$('#onb').classList.add('show');return;}
+  /* find session member */
+  var sess=getSession();
+  ME=sess?findMember(sess.email):null;
+  if(!ME){showGate(state.members&&state.members.length?'normal':'claim');renderAll();return;}
+  applyRole();renderAll();
+})();
+
+/* expose a few handlers used by inline markup */
+window.show=show;window.openHire=openHire;window.deployPack=deployPack;window.closeHire=closeHire;
+window.diceName=diceName;window.hwStep=hwStep;window.confirmHire=confirmHire;
+window.decideApproval=decideApproval;window.openDrawer=openDrawer;window.closeDrawer=closeDrawer;
+window.pauseAgent=pauseAgent;window.requestResume=requestResume;window.retireAgent=retireAgent;
+window.saveWorkspaceName=saveWorkspaceName;window.inviteMember=inviteMember;
+window.exportJSON=exportJSON;window.exportAgentsCSV=exportAgentsCSV;window.exportPayrollCSV=exportPayrollCSV;window.exportAuditCSV=exportAuditCSV;
+window.copyLink=copyLink;window.copyApiKey=copyApiKey;window.importPick=importPick;
+window.resetWorkspace=resetWorkspace;window.clearAudit=clearAudit;window.exitSnapshot=exitSnapshot;
+window.openReport=openReport;window.closeRep=closeRep;window.dlReport=dlReport;
+window.obBack=obBack;window.closeHelp=closeHelp;window.signOut=signOut;
 })();
 </script>
 </body>
