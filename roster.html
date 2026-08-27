@@ -227,6 +227,23 @@ kbd{font-family:var(--mono);font-size:10px;background:var(--card2);border:1px so
 .kind{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--border2);color:var(--muted);border-radius:99px;padding:3px 9px;margin-left:8px;}
 .locked{font-family:var(--mono);font-size:10px;color:var(--faint);letter-spacing:.1em;}
 
+/* Work Ledger */
+.tk{border:1px solid var(--border);background:var(--card);border-radius:var(--r);padding:15px 17px;display:flex;gap:14px;align-items:flex-start;margin-bottom:11px;cursor:pointer;transition:.22s;animation:rise .3s;width:100%;text-align:left;}
+.tk:hover{border-color:rgba(94,234,212,.45);transform:translateY(-2px);}
+.tk .tav{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex:none;background:linear-gradient(135deg,var(--ac,#a78bfa),transparent 150%);color:#0b0a1f;}
+.tk .tm{flex:1;min-width:0;}
+.tk .tt{font-weight:700;font-size:14px;}
+.tk .tmeta{font-family:var(--mono);font-size:9.5px;letter-spacing:.06em;color:var(--faint);margin-top:3px;display:flex;gap:12px;flex-wrap:wrap;}
+.tk .tout{font-size:12.5px;color:var(--muted);margin-top:6px;line-height:1.55;}
+.tk .tart{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px;color:var(--sky);border:1px solid rgba(125,211,252,.35);border-radius:99px;padding:3px 10px;margin-top:8px;}
+.tq{font-family:var(--mono);font-size:10px;font-weight:700;padding:3px 8px;border-radius:8px;border:1px solid;flex:none;}
+.q-hi{color:var(--teal);border-color:rgba(94,234,212,.45);background:rgba(94,234,212,.07);}
+.q-md{color:var(--violet);border-color:rgba(167,139,250,.45);background:rgba(167,139,250,.07);}
+.q-lo{color:var(--amber);border-color:rgba(251,191,36,.45);background:rgba(251,191,36,.07);}
+.artpre{background:#070a18;border:1px solid var(--border);border-radius:12px;padding:15px;font-family:var(--mono);font-size:11.5px;line-height:1.8;color:#c3cbe4;white-space:pre-wrap;word-break:break-word;margin-top:10px;max-height:240px;overflow-y:auto;}
+.arthead{display:flex;justify-content:space-between;gap:10px;font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;color:var(--faint);text-transform:uppercase;flex-wrap:wrap;}
+@media(max-width:640px){.tk{padding:13px;gap:11px;}#workQ{max-width:none!important;width:100%;}}
+
 /* Payroll */
 .pbar{margin-bottom:13px;}
 .pbar .pl{display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:6px;}
@@ -449,6 +466,7 @@ input[type=range][disabled]{cursor:not-allowed;opacity:.5;}
   <nav id="sidebar" aria-label="Roster sections">
     <button class="navitem on" data-view="command"><span class="ico">📊</span><span class="lb">Command Deck</span></button>
     <button class="navitem" data-view="agents"><span class="ico">🤖</span><span class="lb">Agents</span></button>
+    <button class="navitem" data-view="work"><span class="ico">📦</span><span class="lb">Work Ledger</span></button>
     <button class="navitem" data-view="market"><span class="ico">🛒</span><span class="lb">Marketplace</span></button>
     <button class="navitem" data-view="approvals"><span class="ico">✋</span><span class="lb">Approvals</span><span class="badge" id="apBadge" hidden>0</span></button>
     <button class="navitem" data-view="payroll"><span class="ico">💰</span><span class="lb">Payroll</span></button>
@@ -500,6 +518,16 @@ input[type=range][disabled]{cursor:not-allowed;opacity:.5;}
         <button class="btn btn-p btn-sm only-admin" onclick="openHire()">＋ Hire agent <span class="mut" style="font-weight:400;">(N)</span></button>
       </div>
       <div id="agentGrid"></div>
+    </section>
+
+    <!-- WORK LEDGER -->
+    <section class="view" id="v-work">
+      <div class="v-head">
+        <div><h2>Work Ledger</h2><p class="sub">Real tasks, reported. Every job your agents complete files a signed receipt — duration, cost, quality, and the artifact it produced.</p></div>
+        <input class="txt" id="workQ" placeholder="Filter receipts… (agent, task, id)" style="max-width:280px;" aria-label="Filter receipts"/>
+      </div>
+      <div class="kpis" id="workKpis"></div>
+      <div id="workList"></div>
     </section>
 
     <!-- MARKETPLACE -->
@@ -591,7 +619,7 @@ input[type=range][disabled]{cursor:not-allowed;opacity:.5;}
         <div class="apikey" id="apiKey">…</div>
         <div class="field" style="margin-top:12px;">
           <button class="btn btn-g btn-sm" onclick="copyApiKey()">Copy key</button>
-          <span class="mut" style="font-size:11.5px;">GET /v1/agents · GET /v1/approvals · POST /v1/approvals/:id/decide · GET /v1/audit — documented at launch.</span>
+          <span class="mut" style="font-size:11.5px;">GET /v1/agents · POST /v1/tasks/receipt · GET /v1/tasks · GET /v1/approvals · POST /v1/approvals/:id/decide · GET /v1/audit — documented at launch.</span>
         </div>
       </div>
 
@@ -615,6 +643,11 @@ input[type=range][disabled]{cursor:not-allowed;opacity:.5;}
 <!-- HIRE MODAL -->
 <div class="overlay" id="hireOv" role="dialog" aria-modal="true" aria-label="Hire agent">
   <div class="modal" id="hireModal"></div>
+</div>
+
+<!-- WORK RECEIPT MODAL -->
+<div class="overlay" id="workOv" role="dialog" aria-modal="true" aria-label="Task receipt">
+  <div class="modal" id="workModal"></div>
 </div>
 
 <!-- REPORT MODAL -->
@@ -724,6 +757,59 @@ var INTEGRATIONS=[
 ];
 var PERM={hire:1,approve:1,budget:1,pause:1,retire:1,settings:1,market:1,members:'owner',danger:'owner'};
 
+/* ---------- task receipt library (what agents actually DO) ---------- */
+var CUSTOMERS=['Sabi Market','Okoro Logistics','BluePeak Media','Kano Textiles','Zenith Coffee','Windmill Foods','Femi & Co','Nordvind AB','Adaeze Stores','Palm Grove Hotel'];
+var TASKLIB={
+ 'Support Agent':[
+  {t:'Ticket resolution',o:function(c,a){return 'Resolved ticket #T-'+(1000+Math.floor(Math.random()*8999))+' (“can\u2019t log in”) for '+c+' in first reply — CSAT 5/5.';},a:function(id){return['support/resolution-'+id+'.md','Ticket #T-4821 · customer: '+pick(CUSTOMERS)+'\nDiagnosis: stale OAuth token after password reset.\nFix: forced re-auth link + cache clear.\nTime-to-resolution: 3m 40s · first-reply CSAT 5/5\nTags: auth, P2, auto-closed'];}},
+  {t:'Complaint de-escalation',o:function(c,a){return 'De-escalated a chargeback threat from '+c+'; offered express replacement, customer upgraded plan.';},a:function(id){return['support/escalation-'+id+'.md','Escalation handled end-to-end.\nCustomer sentiment: angry → satisfied (Δ +0.82)\nResolution: replacement + 1 month credit ('+money(40)+')\nApproved by policy: retain-under-'+money(50)];}},
+  {t:'FAQ deflection',o:function(c,a){return 'Auto-answered '+r(12,40)+' repetitive queries for '+c+' without human touch.';},a:function(id){return['support/faq-batch-'+id+'.md','Batch: '+r(12,40)+' queries · 0 hand-offs\nTop topics: delivery status, returns window, VAT receipts\nAvg answer length: 62 words · thumbs-up rate 96%'];}}
+ ],
+ 'Finance Ops':[
+  {t:'Ledger reconciliation',o:function(c,a){return 'Reconciled '+r(80,400)+' transactions on the '+c+' account — 2 anomalies flagged, both cleared.';},a:function(id){return['finance/recon-'+id+'.csv','tx_count,'+r(80,400)+'\nanomalies,2\nstatus,cleared\nlargest_variance,'+money(3.2)+'\nreview_time,11m\nsigned_off,true'];}},
+  {t:'Invoice chase',o:function(c,a){return 'Recovered '+money(r(400,2400))+' in overdue invoices from '+c+' — polite sequence, zero friction.';},a:function(id){return['finance/chase-'+id+'.md','Overdue recovered: '+money(r(400,2400))+'\nSequence: 3 touches over 6 days\nTone_log: firm → friendly → final-notice (never rude)\nNext watch: '+pick(CUSTOMERS)];}},
+  {t:'Expense audit',o:function(c,a){return 'Audited '+r(20,120)+' expense claims; flagged a duplicate receipt from '+c+'.';},a:function(id){return['finance/audit-'+id+'.md','Claims audited: '+r(20,120)+'\nDuplicate receipt detected (₦ match 99.4%)\nPolicy ref: EXP-11b · action: soft-flag to manager'];}}
+ ],
+ 'Research Scout':[
+  {t:'Competitor brief',o:function(c,a){return 'Briefed the growth channel: '+c+' quietly launched a loyalty program — with counter-moves.';},a:function(id){return['research/brief-'+id+'.md','COMPETITOR: '+pick(CUSTOMERS)+'\nMove: loyalty program (points + tiers)\nThreat: medium-high\nCounter-moves:\n 1. flash loyalty match this weekend\n 2. bundle vs points\n 3. win-back email segment'];}},
+  {t:'Lead list build',o:function(c,a){return 'Built a '+r(30,120)+'-company lead list for the '+c+' segment, 91% enriched.';},a:function(id){return['research/leads-'+id+'.csv','companies,'+r(30,120)+'\nenriched,91%\nwith_decision_maker,64%\nstack_fit,high\nexport,crm-ready'];}},
+  {t:'Trend radar',o:function(c,a){return 'Radar: “sustainable packaging” mentions up 3.2× around '+c+' buyers — flagged to marketing.';},a:function(id){return['research/radar-'+id+'.md','Signal: sustainable packaging\nVelocity: +3.2× / 30d\nAudience overlap: '+pick(CUSTOMERS)+' buyers\nRecommendation: content + packaging pilot'];}}
+ ],
+ 'Content Writer':[
+  {t:'Campaign copy',o:function(c,a){return 'Shipped the '+c+' launch campaign — landing page + 5 emails + 9 socials.';},a:function(id){return['content/campaign-'+id+'.md','Delivered: 1 landing page, 5 emails, 9 socials\nVoice: bold / warm / Naija-confident\nHeadline A/B: “Own the season” (winner by 18%)\nWord count: 2,140 · reading level: grade 7'];}},
+  {t:'Product update post',o:function(c,a){return 'Published the weekly product update — changelog translated to human.';},a:function(id){return['content/update-'+id+'.md','Weekly update v'+r(2,9)+'.'+r(0,9)+'\n3 features, 12 fixes → 5 human bullets\nSections: New / Better / Fixed / Coming\nPublished to: blog + in-app + RSS'];}}
+ ],
+ 'Security Sentinel':[
+  {t:'Threat triage',o:function(c,a){return 'Blocked a credential-stuffing wave ('+r(200,2400)+' attempts) — zero account takeovers.';},a:function(id){return['security/incident-'+id+'.md','Attempts blocked: '+r(200,2400)+'\nOrigin clusters: 14 (rotating proxies)\nATO success: 0\nAction: rate-limit + step-up auth on logins'];}},
+  {t:'Access review',o:function(c,a){return 'Reviewed '+r(10,80)+' access grants; revoked 3 stale tokens older than 90 days.';},a:function(id){return['security/access-'+id+'.md','Grants reviewed: '+r(10,80)+'\nStale tokens revoked: 3 (90d+ idle)\nLeast-privilege violations: 0\nNext sweep: automated weekly'];}}
+ ],
+ '_generic':[
+  {t:'Task run',o:function(c,a){return 'Completed an automated job for '+c+' and filed the artifact.';},a:function(id){return['work/run-'+id+'.log','job: completed\nstatus: ok\noutput: artifact attached\nreview: not required'];}}
+ ]
+};
+function pick(arr){return arr[Math.floor(Math.random()*arr.length)];}
+function r(a,b){return a+Math.floor(Math.random()*(b-a+1));}
+function libFor(role){return TASKLIB[role]||TASKLIB._generic;}
+function mkReceipt(agent,ts){
+  var item=pick(libFor(agent.role));
+  var id='TSK-'+(state.counters.tsk++);
+  var dur=r(4,68),cost=+(0.2+Math.random()*1.9).toFixed(2),q=r(84,99);
+  var out=item.o(pick(CUSTOMERS),agent);
+  var art=item.a(id.toLowerCase());
+  return {id:id,agent:agent.id,aname:agent.name,role:agent.role,type:item.t,dur:dur,cost:cost,q:q,out:out,art:art[0],ex:art[1],ts:ts||Date.now()};
+}
+function buildDemoTasks(){
+  var t=Date.now(),tasks=[];
+  var pool=[['ag1','Aria','Support Agent'],['ag2','Ledger','Finance Ops'],['ag3','Scout','Research Scout'],['ag4','Quill','Content Writer'],['ag5','Sentinel','Security Sentinel'],['ag7','Amber','Research Scout'],['ag8','Echo','Content Writer'],['ag1','Aria','Support Agent'],['ag5','Sentinel','Security Sentinel'],['ag2','Ledger','Finance Ops'],['ag3','Scout','Research Scout'],['ag1','Aria','Support Agent'],['ag4','Quill','Content Writer'],['ag7','Amber','Research Scout'],['ag2','Ledger','Finance Ops'],['ag5','Sentinel','Security Sentinel']];
+  var base=2025;
+  pool.forEach(function(p,i){
+   var item=pick(libFor(p[2]));var id='TSK-'+(base++);
+   var art=item.a(id.toLowerCase());
+   tasks.push({id:id,agent:p[0],aname:p[1],role:p[2],type:item.t,dur:r(4,68),cost:+(0.2+Math.random()*1.9).toFixed(2),q:r(84,99),out:item.o(pick(CUSTOMERS),null),art:art[0],ex:art[1],ts:t-(i*3.7+1)*3600e3});
+  });
+  return tasks;
+}
+
 /* ---------- state ---------- */
 function mkAgent(o){return Object.assign({id:'',name:'',role:'',dept:'',status:'active',budget:200,spent:0,scopes:[],offScopes:[],grade:'A',tasks:0,since:Date.now()},o);}
 function demoState(){
@@ -759,7 +845,8 @@ function demoState(){
    prefs:{tick:true,toasts:true},
    integrations:{slack:true,teams:false,gws:false,notion:true,jira:false,okta:false},
    flags:{firstHire:false,firstAction:false,reviewed:false},
-   counters:{apr:207,agt:10}, apikey:'rsk_live_'+Math.random().toString(36).slice(2,10)+'_'+Math.random().toString(36).slice(2,6)
+   tasks:buildDemoTasks(),
+   counters:{apr:207,agt:10,tsk:2041}, apikey:'rsk_live_'+Math.random().toString(36).slice(2,10)+'_'+Math.random().toString(36).slice(2,6)
   };
 }
 function blankState(name,ind,currency){
@@ -772,7 +859,8 @@ function blankState(name,ind,currency){
    prefs:{tick:true,toasts:true},
    integrations:{slack:true,teams:false,gws:false,notion:true,jira:false,okta:false},
    flags:{firstHire:false,firstAction:false,reviewed:false},
-   counters:{apr:201,agt:1}, apikey:'rsk_live_'+Math.random().toString(36).slice(2,10)+'_'+Math.random().toString(36).slice(2,6)};
+   tasks:[],
+   counters:{apr:201,agt:1,tsk:1001}, apikey:'rsk_live_'+Math.random().toString(36).slice(2,10)+'_'+Math.random().toString(36).slice(2,6)};
 }
 function inflate(s){
   s.v=3; s.members=s.members||[]; s.audit=s.audit||[];
@@ -780,7 +868,8 @@ function inflate(s){
   s.integrations=Object.assign({slack:true,teams:false,gws:false,notion:true,jira:false,okta:false},s.integrations||{});
   s.policies=Object.assign({capAudit:true,needApproval:true,autoOffboard:false,publicFeed:true},s.policies||{});
   s.flags=Object.assign({firstHire:s.agents&&s.agents.length>0,firstAction:false,reviewed:false},s.flags||{});
-  s.counters=Object.assign({apr:220,agt:(s.agents?s.agents.length:0)+1},s.counters||{});
+  s.counters=Object.assign({apr:220,agt:(s.agents?s.agents.length:0)+1,tsk:1800},s.counters||{});
+  s.tasks=s.tasks||[];
   s.apikey=s.apikey||('rsk_live_'+Math.random().toString(36).slice(2,10));
   s.series=s.series||[];while(s.series.length<14)s.series.unshift(0);
   if(s.series.length>14)s.series=s.series.slice(-14);
@@ -845,7 +934,7 @@ function renderKpis(){
   var pend=state.approvals.filter(function(a){return a.status==='pending';}).length;
   $('#kpis').innerHTML=
    '<div class="kpi" style="--kc:var(--violet)"><div class="kv">'+act.length+'</div><div class="kk">Agents on duty</div><div class="kd">'+(state.agents.filter(function(a){return a.status==='paused';}).length)+' paused · '+state.agents.filter(function(a){return a.status==='offboarded';}).length+' retired</div></div>'+
-   '<div class="kpi" style="--kc:var(--teal)"><div class="kv">'+fmt(tasks)+'</div><div class="kk">Tasks completed</div><div class="kd">across '+act.length+' active agents</div></div>'+
+   '<div class="kpi" style="--kc:var(--teal)"><div class="kv">'+fmt(tasks)+'</div><div class="kk">Tasks completed</div><div class="kd">'+(state.tasks||[]).length+' receipts filed in Work Ledger</div></div>'+
    '<div class="kpi" style="--kc:var(--sky)"><div class="kv">'+money(spend)+'</div><div class="kk">Spend this month</div><div class="kd">of '+money(state.agents.reduce(function(s,a){return s+a.budget;},0))+' budgeted</div></div>'+
    '<div class="kpi" style="--kc:'+(pend?'var(--amber)':'var(--teal)')+'"><div class="kv">'+pend+'</div><div class="kk">Pending approvals</div><div class="kd">'+(pend?'needs your signature':'all clear — nice')+'</div></div>';
   var b=$('#apBadge');b.hidden=!pend;b.textContent=pend;
@@ -1000,6 +1089,60 @@ function decideApproval(id,ok){
   renderAll();
 }
 function byId(id){var r=null;state.agents.forEach(function(a){if(a.id===id)r=a;});return r;}
+/* ---------- work ledger ---------- */
+var workQ='';
+function qcls(q){return q>=95?'q-hi':q>=88?'q-md':'q-lo';}
+function renderWork(){
+  var list=(state.tasks||[]).slice().sort(function(a,b){return b.ts-a.ts;});
+  var q=workQ.toLowerCase();
+  if(q)list=list.filter(function(t){return (t.aname+' '+t.role+' '+t.type+' '+t.id+' '+t.out).toLowerCase().indexOf(q)>=0;});
+  var today=new Date().toDateString();
+  var nToday=(state.tasks||[]).filter(function(t){return new Date(t.ts).toDateString()===today;}).length;
+  var totCost=(state.tasks||[]).reduce(function(s,t){return s+t.cost;},0);
+  var avgQ=(state.tasks||[]).length?Math.round((state.tasks||[]).reduce(function(s,t){return s+t.q;},0)/(state.tasks||[]).length):0;
+  $('#workKpis').innerHTML=
+   '<div class="kpi" style="--kc:var(--teal)"><div class="kv">'+(state.tasks||[]).length+'</div><div class="kk">Receipts filed</div><div class="kd">'+nToday+' today</div></div>'+
+   '<div class="kpi" style="--kc:var(--violet)"><div class="kv">'+(avgQ||'—')+'</div><div class="kk">Avg quality score</div><div class="kd">'+(avgQ>=90?'<b>excellent</b> — QA threshold 85':'QA threshold 85')+'</div></div>'+
+   '<div class="kpi" style="--kc:var(--sky)"><div class="kv">'+money(totCost)+'</div><div class="kk">Cost of work done</div><div class="kd">≈ '+money((state.tasks||[]).length?totCost/(state.tasks||[]).length:0)+' per task</div></div>'+
+   '<div class="kpi" style="--kc:var(--amber)"><div class="kv">'+new Set((state.tasks||[]).map(function(t){return t.type;})).size+'</div><div class="kk">Task types</div><div class="kd">across '+new Set((state.tasks||[]).map(function(t){return t.agent;})).size+' agents</div></div>';
+  if(!(state.tasks||[]).length){
+   $('#workList').innerHTML='<div class="empty"><div class="ei">📦</div><b>No work filed yet</b><p>When agents complete tasks, their signed receipts land here — duration, cost, quality and the artifact they produced. Hire an agent and watch it work.</p><button class="btn btn-p only-admin" onclick="openHire()">＋ Hire an agent</button></div>';return;
+  }
+  if(!list.length){$('#workList').innerHTML='<div class="empty"><div class="ei">🔍</div><b>No receipts match “'+esc(workQ)+'”</b></div>';return;}
+  $('#workList').innerHTML=list.slice(0,60).map(function(t){
+   var a=byId(t.agent);
+   return '<button class="tk" style="--ac:'+(a?agentAccent(a):'#a78bfa')+'" data-tk="'+t.id+'">'+
+    '<span class="tav" style="--ac:'+(a?agentAccent(a):'#a78bfa')+'">'+esc(t.aname[0])+'</span>'+
+    '<span class="tm"><span class="tt">'+esc(t.type)+' — '+esc(t.aname)+'</span>'+
+    '<span class="tmeta"><span>'+t.id+'</span><span>⏱ '+t.dur+'m</span><span>💵 '+money(t.cost)+'</span><span>'+ago(t.ts)+'</span></span>'+
+    '<span class="tout">'+esc(t.out)+'</span>'+
+    '<span class="tart">📄 '+esc(t.art)+'</span></span>'+
+    '<span class="tq '+qcls(t.q)+'">✦ '+t.q+'</span>'+
+   '</button>';
+  }).join('');
+  $$('#workList [data-tk]').forEach(function(b){
+   b.addEventListener('click',function(){openWork(b.dataset.tk);});
+  });
+}
+function openWork(id){
+  var t=null;(state.tasks||[]).forEach(function(x){if(x.id===id)t=x;});
+  if(!t)return;
+  var a=byId(t.agent);
+  $('#workModal').innerHTML='<div class="m-head"><div><h3>📦 '+t.id+'</h3><p class="mut" style="font-size:13px;margin-top:4px;">'+esc(t.type)+' · filed '+ago(t.ts)+' by <b style="color:var(--text);">'+esc(t.aname)+'</b> ('+esc(t.role)+')</p></div><button class="m-x" onclick="closeWork()" aria-label="Close">✕</button></div>'+
+   '<div class="b-grid" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin:16px 0;font-family:var(--mono);font-size:11px;">'+
+   '<div style="background:var(--card);border:1px solid var(--border);border-radius:9px;padding:8px 11px;color:var(--muted);">DURATION<b style="color:var(--text);display:block;margin-top:2px;font-weight:400;">⏱ '+t.dur+' minutes</b></div>'+
+   '<div style="background:var(--card);border:1px solid var(--border);border-radius:9px;padding:8px 11px;color:var(--muted);">COST<b style="color:var(--teal);display:block;margin-top:2px;font-weight:400;">'+money(t.cost)+'</b></div>'+
+   '<div style="background:var(--card);border:1px solid var(--border);border-radius:9px;padding:8px 11px;color:var(--muted);">QUALITY<b style="color:var(--text);display:block;margin-top:2px;font-weight:400;">✦ '+t.q+' / 100</b></div></div>'+
+   '<span class="lbl">Outcome</span><p style="font-size:13.5px;line-height:1.7;color:#c3cbe4;">'+esc(t.out)+'</p>'+
+   '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:18px;"><span class="lbl" style="margin:0;">Produced artifact</span><span class="arthead">'+esc(t.art)+'</span></div>'+
+   '<div class="artpre">'+esc(t.ex)+'</div>'+
+   '<div class="m-foot"><button class="btn btn-g" onclick="closeWork()">Close</button>'+(a?'<button class="btn btn-p" id="wkAgent">Open '+esc(t.aname)+'\u2019s file →</button>':'')+'</div>';
+  var w=$('#wkAgent');if(w)w.addEventListener('click',function(){closeWork();openDrawer(t.agent);});
+  $('#workOv').classList.add('show');
+}
+function closeWork(){$('#workOv').classList.remove('show');}
+$('#workOv').addEventListener('click',function(e){if(e.target===this)closeWork();});
+$('#workQ').addEventListener('input',function(e){workQ=e.target.value;renderWork();});
 function byName(n){var r=false;state.agents.forEach(function(a){if(a.name.toLowerCase()===String(n).toLowerCase())r=true;});return r;}
 function renderPayroll(){
   var depts={};
@@ -1130,7 +1273,7 @@ function copyApiKey(){
   try{navigator.clipboard.writeText(state.apikey);toast('Prototype API key copied','ok','🔑');}
   catch(e){prompt('API key:',state.apikey);}
 }
-function renderAll(){renderKpis();renderChecklist();renderFeed();renderPolicies();renderAgents();renderMarket();renderApprovals();renderPayroll();renderCharts();renderAudit();renderSettings();}
+function renderAll(){renderKpis();renderChecklist();renderFeed();renderPolicies();renderAgents();renderMarket();renderApprovals();renderPayroll();renderCharts();renderAudit();renderSettings();renderWork();}
 
 /* ---------- live tick ---------- */
 var TICKS=['answered 12 tickets with 98% CSAT','reconciled the morning ledger — 0 anomalies','briefed 3 competitor moves to the growth channel','shipped today\u2019s socials + product copy','flagged and rate-limited a credential-stuffing attempt','summarized 44 unread threads for the team','drafted next week\u2019s content calendar','closed 9 returns tickets end-to-end'];
@@ -1142,8 +1285,16 @@ setInterval(function(){
   a.tasks+=1+Math.floor(Math.random()*3);
   a.spent=Math.min(a.budget*1.05,a.spent+(0.3+Math.random()*1.4));
   if(Math.random()<.35)state.series[state.series.length-1]=(state.series[state.series.length-1]||0)+1;
+  /* workers FILE RECEIPTS — proof of work */
+  if(Math.random()<.5){
+   var rc=mkReceipt(a);
+   state.tasks.unshift(rc);
+   if(state.tasks.length>200)state.tasks.length=200;
+   pushFeed('📦','<b>'+a.name+'</b> filed receipt <b>'+rc.id+'</b> — '+rc.type+' · ✦'+rc.q+'.');
+   if($('#v-work').classList.contains('on'))renderWork();
+  }
   if(state.policies.capAudit&&a.spent/a.budget>0.8&&Math.random()<.3)pushFeed('🛡️','Cap-audit: <b>'+a.name+'</b> crossed 80% of budget.');
-  else if(Math.random()<.45)pushFeed('⚡','<b>'+a.name+'</b> '+TICKS[Math.floor(Math.random()*TICKS.length)]+'.');
+  else if(Math.random()<.3)pushFeed('⚡','<b>'+a.name+'</b> '+TICKS[Math.floor(Math.random()*TICKS.length)]+'.');
   renderKpis();renderCharts();
   if($('#v-payroll').classList.contains('on')){renderPayroll();fillPayBars();}
   save();
@@ -1225,7 +1376,7 @@ function openReport(){
   state.agents.forEach(function(a){tb+=a.budget;ts2+=a.spent;tt+=a.tasks;if(!top||a.tasks>top.tasks)top=a;});
   var decided=state.audit.filter(function(f){return f.ico==='✍️'||f.ico==='🚫';}).length;
   var rep={generated:new Date().toISOString(),workspace:state.ws.name,currency:state.ws.currency,
-   agents:{total:state.agents.length,active:act.length},tasks:tt,
+   agents:{total:state.agents.length,active:act.length},tasks:tt,receipts:(state.tasks||[]).length,
    spend_native:+(ts2*cur().r).toFixed(0),budget_native:+(tb*cur().r).toFixed(0),
    utilization:tb?Math.round(ts2/tb*100):0,approvals_decided:decided,
    top_agent:top?{name:top.name,role:top.role,tasks:top.tasks}:null,
@@ -1532,8 +1683,8 @@ function palActions(){
   items.push({t:'Browse Marketplace',s:'view',ico:'🛒',fn:function(){show('market');}});
   items.push({t:'Weekly report',s:'action',ico:'📈',fn:function(){openReport();}});
   items.push({t:'Copy shared snapshot link',s:'share',ico:'🔗',fn:function(){copyLink();}});
-  ['command','agents','market','approvals','payroll','audit','settings'].forEach(function(v){
-   items.push({t:'Go to '+({command:'Command Deck',agents:'Agents',market:'Marketplace',approvals:'Approvals',payroll:'Payroll',audit:'Audit Log',settings:'Settings'})[v],s:'view',ico:{command:'📊',agents:'🤖',market:'🛒',approvals:'✋',payroll:'💰',audit:'🧾',settings:'⚙️'}[v],fn:function(){show(v);}});
+  ['command','agents','work','market','approvals','payroll','audit','settings'].forEach(function(v){
+   items.push({t:'Go to '+({command:'Command Deck',agents:'Agents',work:'Work Ledger',market:'Marketplace',approvals:'Approvals',payroll:'Payroll',audit:'Audit Log',settings:'Settings'})[v],s:'view',ico:{command:'📊',agents:'🤖',work:'📦',market:'🛒',approvals:'✋',payroll:'💰',audit:'🧾',settings:'⚙️'}[v],fn:function(){show(v);}});
   });
   state.agents.forEach(function(a){
    items.push({t:'Open '+a.name+' — '+a.role,s:a.status,ico:'🤖',fn:function(){openDrawer(a.id);}});
@@ -1636,7 +1787,7 @@ window.exportJSON=exportJSON;window.exportAgentsCSV=exportAgentsCSV;window.expor
 window.copyLink=copyLink;window.copyApiKey=copyApiKey;window.importPick=importPick;
 window.resetWorkspace=resetWorkspace;window.clearAudit=clearAudit;window.exitSnapshot=exitSnapshot;
 window.openReport=openReport;window.closeRep=closeRep;window.dlReport=dlReport;
-window.obBack=obBack;window.closeHelp=closeHelp;window.signOut=signOut;
+window.obBack=obBack;window.closeHelp=closeHelp;window.signOut=signOut;window.openWork=openWork;window.closeWork=closeWork;
 })();
 </script>
 </body>
