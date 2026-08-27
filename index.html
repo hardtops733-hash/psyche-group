@@ -123,6 +123,8 @@ h2{font-size:clamp(30px,4vw,44px);font-weight:800;letter-spacing:-.028em;line-he
 .v-why{margin-top:14px;padding:12px 15px;border-left:2px solid rgba(94,234,212,.5);background:rgba(94,234,212,.05);border-radius:0 10px 10px 0;font-size:13px;font-style:italic;color:#c3cbe4;line-height:1.55;}
 .v-open{display:inline-flex;align-items:center;gap:7px;margin-top:16px;font-family:var(--mono);font-size:11.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);transition:gap .25s;}
 .venture:hover .v-open{gap:11px;}
+.v-proto{display:inline-flex;align-items:center;gap:8px;margin-top:10px;font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.18em;color:var(--amber);}
+.v-proto::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--amber);box-shadow:0 0 10px rgba(251,191,36,.7);animation:pulse 2s infinite;}
 
 /* engine */
 .engine{background:linear-gradient(180deg,transparent,rgba(20,184,166,.05) 45%,transparent);}
@@ -398,6 +400,7 @@ var ICONS = {
 
 var VENTURES = [
   {id:'roster', name:'Roster', mission:'The employer-of-record for digital workers — identity, budgets, permissions, reviews and retirement for AI employees.', status:'In build', sclass:'s-build', primitive:'LABOR', line:'HR for the machines humanity just hired',
+   proto:'roster.html',
    purpose:'Machine labor needs a rulebook before chaos writes one. Roster makes hiring an AI as safe and accountable as hiring a human. Whoever writes the rules of digital labor doesn\u2019t just make money — they govern the economics of the century.',
    problem:'Companies are hiring fleets of AI agents with zero HR infrastructure — no accountability, no audit trail, no offboarding, no law.',
    why:'Agent adoption is exploding right now, and regulation is chasing it. Somebody must become the system of record for non-human labor.',
@@ -502,7 +505,7 @@ VENTURES.forEach(function(v,i){
     '<div class="v-name">'+v.name+' <span class="v-by">BY PSYCHE</span></div>'+
     '<p class="v-mission">'+v.mission+'</p>'+
     '<div class="v-why">'+v.purpose+'</div>'+
-    '<span class="v-open">Open venture file →</span>';
+    '<span class="v-open">Open venture file →</span>'+(v.proto?'<span class="v-proto">LIVE PROTOTYPE ↗</span>':'');
   card.addEventListener('click', function(){ openModal(v); });
   grid.appendChild(card);
 });
@@ -520,7 +523,7 @@ function openModal(v){
       '<div class="m-row"><div class="k">Why now</div><p>'+v.why+'</p></div>'+
       '<div class="m-row"><div class="k">The business</div><p>'+v.model+'</p></div>'+
       '<div class="m-row"><div class="k">The flywheel</div><p>'+v.fly+'</p></div>'+
-    '</div>';
+    '</div>'+(v.proto?'<a class="cta-link" style="margin-top:22px;" href="'+v.proto+'">▶ Open the live prototype — '+v.name+' ↗</a>':'');
   modal.classList.add('show');
   document.body.style.overflow='hidden';
 }
